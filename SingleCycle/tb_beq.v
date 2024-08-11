@@ -22,7 +22,7 @@ module testbenchv1;
 	wire [31:0] writedata, dataadr;
 	wire memwrite;
 	// instantiate device to be tested
-	top dut(clk, reset, writedata, dataadr, memwrite);
+	SingleCycle dut(clk, reset, writedata, dataadr, memwrite);
 	
 	// initialize test
 	initial
