@@ -17,7 +17,7 @@ module datapath(input clk, reset,
     wire [31:0] aluresult, aluout;
     wire [31:0] signimm; // the sign-extended immediate
     wire [31:0] signimmsh; // the sign-extended immediate shifted left by 2
-    wire [31:0] wd3, rd1, rd2
+    wire [31:0] wd3, rd1, rd2;
 
     // Extracting the op dode and funct fields
     assign op = instr[31:26];

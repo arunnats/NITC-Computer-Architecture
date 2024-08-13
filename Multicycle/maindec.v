@@ -52,13 +52,13 @@ module maindec(
                 ADDI: nextstate <= ADDIEXECUTE;
                 J: nextstate <= JUMP;
                 default: nextstate <= FETCH; // should never happen
-            endcase
+                endcase
 
             MEMADR: case(op)
                     LW: nextstate <= MEMRD;
                     SW: nextstate <= MEMWR;
                     default: nextstate <= FETCH; // should never happen
-                Endcase
+                    endcase
 
             MEMRD: nextstate <= MEMWB;
             MEMWB: nextstate <= FETCH;
@@ -74,9 +74,7 @@ module maindec(
         endcase
 
     // output logic
-    assign {pcwrite, memwrite, irwrite, regwrite,
-    alusrca, branch, iord, memtoreg, regdst,
-    alusrcb, pcsrc, aluop} = controls; 
+    assign {pcwrite, memwrite, irwrite, regwrite, alusrca, branch, iord, memtoreg, regdst, alusrcb, pcsrc, aluop} = controls; 
     always @( * )
         case(state)
             FETCH: controls <= 19'b1010_00000_0100_00;

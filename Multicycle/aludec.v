@@ -6,19 +6,18 @@ module aludec(
 
     always @( * )
         case(aluop)
-        3'b000: alucontrol <= 3'b010; // add
-        3'b001: alucontrol <= 3'b010; // sub
+            3'b000: alucontrol <= 3'b010; // add
+            3'b001: alucontrol <= 3'b010; // sub
 
-        // RTYPE instruction use the 6-bit funct field of instruction to specify ALU
-        operation
-        3'b010: case(funct)
-            6'b100000: alucontrol <= 3'b010; // ADD
-            6'b100010: alucontrol <= 3'b110; // SUB
-            6'b100100: alucontrol <= 3'b000; // AND
-            6'b100101: alucontrol <= 3'b001; // OR
-            6'b101010: alucontrol <= 3'b111; // SLT
-            default: alucontrol <= 3'bxxx; // ???
-        endcase
+            // RTYPE instruction use the 6-bit funct field of instruction to specify ALU operation
+            3'b010: case(funct)
+                6'b100000: alucontrol <= 3'b010; // ADD
+                6'b100010: alucontrol <= 3'b110; // SUB
+                6'b100100: alucontrol <= 3'b000; // AND
+                6'b100101: alucontrol <= 3'b001; // OR
+                6'b101010: alucontrol <= 3'b111; // SLT
+                default: alucontrol <= 3'bxxx; // ???
+            endcase
     default: alucontrol <= 3'bxxx; // ???
     endcase
 endmodule 
