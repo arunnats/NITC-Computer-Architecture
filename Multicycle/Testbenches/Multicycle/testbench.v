@@ -14,6 +14,9 @@ module testbench();
     // initialize test  
     initial  
     begin  
+        $dumpfile("testbench.vcd");  
+        $dumpvars(0, testbench);
+
         reset <= 1; # 12; reset <= 0;  
         cycle <= 1;  
     end  
