@@ -1,0 +1,47 @@
+#! /usr/bin/vvp
+:ivl_version "12.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 12;
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/system.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_sys.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_textio.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2005_math.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/va_math.vpi";
+S_0x5aa372027510 .scope module, "signext_tb" "signext_tb" 2 2;
+ .timescale -12 -12;
+v0x5aa372071500_0 .var "a", 15 0;
+v0x5aa3720715f0_0 .net "y", 31 0, L_0x5aa372071ae0;  1 drivers
+S_0x5aa3720276a0 .scope module, "uut" "signext" 2 15, 3 1 0, S_0x5aa372027510;
+ .timescale -12 -12;
+    .port_info 0 /INPUT 16 "a";
+    .port_info 1 /OUTPUT 32 "y";
+v0x5aa372027830_0 .net *"_ivl_1", 0 0, L_0x5aa3720716c0;  1 drivers
+v0x5aa372071220_0 .net *"_ivl_2", 15 0, L_0x5aa3720717e0;  1 drivers
+v0x5aa372071300_0 .net "a", 15 0, v0x5aa372071500_0;  1 drivers
+v0x5aa3720713c0_0 .net "y", 31 0, L_0x5aa372071ae0;  alias, 1 drivers
+L_0x5aa3720716c0 .part v0x5aa372071500_0, 15, 1;
+LS_0x5aa3720717e0_0_0 .concat [ 1 1 1 1], L_0x5aa3720716c0, L_0x5aa3720716c0, L_0x5aa3720716c0, L_0x5aa3720716c0;
+LS_0x5aa3720717e0_0_4 .concat [ 1 1 1 1], L_0x5aa3720716c0, L_0x5aa3720716c0, L_0x5aa3720716c0, L_0x5aa3720716c0;
+LS_0x5aa3720717e0_0_8 .concat [ 1 1 1 1], L_0x5aa3720716c0, L_0x5aa3720716c0, L_0x5aa3720716c0, L_0x5aa3720716c0;
+LS_0x5aa3720717e0_0_12 .concat [ 1 1 1 1], L_0x5aa3720716c0, L_0x5aa3720716c0, L_0x5aa3720716c0, L_0x5aa3720716c0;
+L_0x5aa3720717e0 .concat [ 4 4 4 4], LS_0x5aa3720717e0_0_0, LS_0x5aa3720717e0_0_4, LS_0x5aa3720717e0_0_8, LS_0x5aa3720717e0_0_12;
+L_0x5aa372071ae0 .concat [ 16 16 0 0], v0x5aa372071500_0, L_0x5aa3720717e0;
+    .scope S_0x5aa372027510;
+T_0 ;
+    %vpi_call 2 8 "$dumpfile", "signext_tb.vcd" {0 0 0};
+    %vpi_call 2 9 "$dumpvars", 32'sb00000000000000000000000000000000, S_0x5aa372027510 {0 0 0};
+    %pushi/vec4 65523, 0, 16;
+    %store/vec4 v0x5aa372071500_0, 0, 16;
+    %delay 1, 0;
+    %pushi/vec4 79, 0, 16;
+    %store/vec4 v0x5aa372071500_0, 0, 16;
+    %delay 1, 0;
+    %vpi_call 2 13 "$finish" {0 0 0};
+    %end;
+    .thread T_0;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "signext_tb.v";
+    "signext.v";
