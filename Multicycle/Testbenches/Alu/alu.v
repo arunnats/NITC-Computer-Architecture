@@ -5,8 +5,8 @@ module alu( input [31:0] A, B,
 );
     always @ ( * )
         case (F[2:0])
-            3'b000: Y <= A & B; // AND
-            3'b001: Y <= A | B; // OR
+            3'b000: Y <= A & B; // AND 
+            3'b001: Y <= A | B; // OR 
             3'b010: Y <= A + B; // ADD
             3'b011: Y <= 0; // not a valid opcode(?)
             3'b110: Y <= A - B; // SUB
