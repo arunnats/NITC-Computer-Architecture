@@ -1,5 +1,5 @@
 $date
-	Sat Aug 31 23:05:35 2024
+	Sat Sep 28 15:33:32 2024
 $end
 $version
 	Icarus Verilog
@@ -20,15 +20,15 @@ $var wire 2 ) alusrcb [1:0] $end
 $var wire 1 * alusrca $end
 $var wire 3 + alucontrol [2:0] $end
 $var reg 1 , clk $end
-$var reg 6 - funct [5:0] $end
-$var reg 32 . instr [31:0] $end
-$var reg 6 / op [5:0] $end
+$var reg 2 - cz [1:0] $end
+$var reg 16 . instr [15:0] $end
+$var reg 4 / op [3:0] $end
 $var reg 1 0 reset $end
 $var reg 1 1 zero $end
 $scope module uut $end
 $var wire 1 , clk $end
-$var wire 6 2 funct [5:0] $end
-$var wire 6 3 op [5:0] $end
+$var wire 2 2 cz [1:0] $end
+$var wire 4 3 op [3:0] $end
 $var wire 1 $ pcen $end
 $var wire 1 0 reset $end
 $var wire 1 1 zero $end
@@ -46,13 +46,13 @@ $var wire 1 * alusrca $end
 $var wire 2 8 aluop [1:0] $end
 $var wire 3 9 alucontrol [2:0] $end
 $scope module ad $end
-$var wire 6 : funct [5:0] $end
-$var wire 2 ; aluop [1:0] $end
+$var wire 2 : cz [1:0] $end
+$var wire 2 ; op [1:0] $end
 $var reg 3 < alucontrol [2:0] $end
 $upscope $end
 $scope module md $end
 $var wire 1 , clk $end
-$var wire 6 = op [5:0] $end
+$var wire 4 = op [3:0] $end
 $var wire 1 0 reset $end
 $var wire 1 ! regwrite $end
 $var wire 1 " regdst $end
@@ -66,65 +66,69 @@ $var wire 1 6 branch $end
 $var wire 2 ? alusrcb [1:0] $end
 $var wire 1 * alusrca $end
 $var wire 2 @ aluop [1:0] $end
-$var parameter 6 A ADDI $end
-$var parameter 5 B ADDIEXECUTE $end
-$var parameter 5 C ADDIWRITEBACK $end
-$var parameter 5 D ALUWRITEBACK $end
-$var parameter 6 E BEQ $end
-$var parameter 5 F BRANCH $end
-$var parameter 5 G DECODE $end
-$var parameter 5 H EXECUTE $end
-$var parameter 5 I FETCH $end
-$var parameter 6 J J $end
-$var parameter 5 K JUMP $end
-$var parameter 6 L LW $end
-$var parameter 5 M MEMADR $end
-$var parameter 5 N MEMRD $end
-$var parameter 5 O MEMWB $end
-$var parameter 5 P MEMWR $end
-$var parameter 6 Q RTYPE $end
-$var parameter 6 R SW $end
-$var reg 17 S controls [16:0] $end
-$var reg 5 T nextstate [4:0] $end
-$var reg 5 U state [4:0] $end
+$var parameter 4 A ADC $end
+$var parameter 4 B ADD $end
+$var parameter 5 C ADDIEXECUTE $end
+$var parameter 5 D ADDIWRITEBACK $end
+$var parameter 5 E ALUWRITEBACK $end
+$var parameter 4 F BEQ $end
+$var parameter 5 G BRANCH $end
+$var parameter 5 H DECODE $end
+$var parameter 5 I EXECUTE $end
+$var parameter 5 J FETCH $end
+$var parameter 4 K JAL $end
+$var parameter 5 L JUMP $end
+$var parameter 4 M LW $end
+$var parameter 5 N MEMADR $end
+$var parameter 5 O MEMRD $end
+$var parameter 5 P MEMWB $end
+$var parameter 5 Q MEMWR $end
+$var parameter 4 R NDU $end
+$var parameter 4 S NDZ $end
+$var parameter 4 T SW $end
+$var reg 17 U controls [16:0] $end
+$var reg 5 V nextstate [4:0] $end
+$var reg 5 W state [4:0] $end
 $upscope $end
 $upscope $end
 $upscope $end
 $enddefinitions $end
 $comment Show the parameter values. $end
 $dumpall
-b101011 R
-b0 Q
-b101 P
-b100 O
-b11 N
-b10 M
-b100011 L
-b1011 K
-b10 J
-b0 I
-b110 H
-b1 G
-b1000 F
-b100 E
-b111 D
-b1010 C
-b1001 B
-b1000 A
+b101 T
+b11 S
+b10 R
+b101 Q
+b100 P
+b11 O
+b10 N
+b100 M
+b1011 L
+b111 K
+b0 J
+b110 I
+b1 H
+b1000 G
+b110 F
+b111 E
+b1010 D
+b1001 C
+b0 B
+b1 A
 $end
 #0
 $dumpvars
-b0 U
-b1 T
-b101000000010000 S
+b0 W
+b1 V
+b101000000010000 U
 b0 @
 b1 ?
 b0 >
 bx =
-b10 <
+bx <
 b0 ;
 bx :
-b10 9
+bx 9
 b0 8
 b1 7
 06
@@ -138,7 +142,7 @@ bx /
 bx .
 bx -
 0,
-b10 +
+bx +
 0*
 b1 )
 0(
@@ -153,6 +157,9 @@ $end
 #1
 1,
 #2
+b10 +
+b10 9
+b10 <
 b0 -
 b0 2
 b0 :
@@ -164,14 +171,8 @@ b0 .
 #3
 1,
 #4
-b101 -
-b101 2
-b101 :
-b1000 /
-b1000 3
-b1000 =
 0,
-b100000000000100000000000000101 .
+b100100000 .
 00
 #5
 0$
@@ -180,525 +181,81 @@ b11 7
 b11 ?
 0'
 04
-b110000 S
-b1001 T
-b1 U
+b110000 U
+b110 V
+b1 W
 1,
 #6
+b11 +
+b11 9
+b11 <
+b10 -
+b10 2
+b10 :
 0,
+b100100010 .
 #7
-b10 )
-b10 7
-b10 ?
-1*
-b10000100000 S
-b1010 T
-b1001 U
-1,
-#8
-0,
-#9
+bx +
+bx 9
+bx <
+b10 8
+b10 ;
+b10 @
 b0 )
 b0 7
 b0 ?
+1*
+b10000000010 U
+b111 V
+b110 W
+1,
+#8
+b0 +
+b0 9
+b0 <
+b0 -
+b0 2
+b0 :
+b1 /
+b1 3
+b1 =
+0,
+b1000100100000 .
+#9
+b10 +
+b10 9
+b10 <
+b0 8
+b0 ;
+b0 @
+1"
 0*
 1!
-b100000000000 S
-b0 T
-b1010 U
+b100001000000 U
+b0 V
+b111 W
 1,
 #10
+bx +
+bx 9
+bx <
+b1 -
+b1 2
+b1 :
 0,
+b1000100100001 .
 #11
 1$
 b1 )
 b1 7
 b1 ?
+0"
 0!
 1'
 14
-b101000000010000 S
-b1 T
-b0 U
+b101000000010000 U
+b1 V
+b0 W
 1,
 #12
-b1100 -
-b1100 2
-b1100 :
-0,
-b100000000000110000000000001100 .
-#13
-0$
-b11 )
-b11 7
-b11 ?
-0'
-04
-b110000 S
-b1001 T
-b1 U
-1,
-#14
-0,
-#15
-b10 )
-b10 7
-b10 ?
-1*
-b10000100000 S
-b1010 T
-b1001 U
-1,
-#16
-0,
-#17
-b0 )
-b0 7
-b0 ?
-0*
-1!
-b100000000000 S
-b0 T
-b1010 U
-1,
-#18
-b100101 -
-b100101 2
-b100101 :
-b0 /
-b0 3
-b0 =
-0,
-b111000100010000000100101 .
-#19
-1$
-b1 )
-b1 7
-b1 ?
-0!
-1'
-14
-b101000000010000 S
-b1 T
-b0 U
-1,
-#20
-0,
-#21
-0$
-b11 )
-b11 7
-b11 ?
-0'
-04
-b110000 S
-b110 T
-b1 U
-1,
-#22
-0,
-#23
-b1 +
-b1 9
-b1 <
-b10 8
-b10 ;
-b10 @
-b0 )
-b0 7
-b0 ?
-1*
-b10000000010 S
-b111 T
-b110 U
-1,
-#24
-0,
-#25
-b10 +
-b10 9
-b10 <
-b0 8
-b0 ;
-b0 @
-1"
-0*
-1!
-b100001000000 S
-b0 T
-b111 U
-1,
-#26
-b100100 -
-b100100 2
-b100100 :
-0,
-b11001000010100000100100 .
-#27
-1$
-b1 )
-b1 7
-b1 ?
-0"
-0!
-1'
-14
-b101000000010000 S
-b1 T
-b0 U
-1,
-#28
-0,
-#29
-0$
-b11 )
-b11 7
-b11 ?
-0'
-04
-b110000 S
-b110 T
-b1 U
-1,
-#30
-0,
-#31
-b0 +
-b0 9
-b0 <
-b10 8
-b10 ;
-b10 @
-b0 )
-b0 7
-b0 ?
-1*
-b10000000010 S
-b111 T
-b110 U
-1,
-#32
-0,
-#33
-b10 +
-b10 9
-b10 <
-b0 8
-b0 ;
-b0 @
-1"
-0*
-1!
-b100001000000 S
-b0 T
-b111 U
-1,
-#34
-b100000 -
-b100000 2
-b100000 :
-0,
-b101001000010100000100000 .
-#35
-1$
-b1 )
-b1 7
-b1 ?
-0"
-0!
-1'
-14
-b101000000010000 S
-b1 T
-b0 U
-1,
-#36
-0,
-#37
-0$
-b11 )
-b11 7
-b11 ?
-0'
-04
-b110000 S
-b110 T
-b1 U
-1,
-#38
-0,
-#39
-b10 8
-b10 ;
-b10 @
-b0 )
-b0 7
-b0 ?
-1*
-b10000000010 S
-b111 T
-b110 U
-1,
-#40
-0,
-#41
-b0 8
-b0 ;
-b0 @
-1"
-0*
-1!
-b100001000000 S
-b0 T
-b111 U
-1,
-#42
-0,
-b100001010011100000100000 .
-#43
-1$
-b1 )
-b1 7
-b1 ?
-0"
-0!
-1'
-14
-b101000000010000 S
-b1 T
-b0 U
-1,
-#44
-0,
-#45
-0$
-b11 )
-b11 7
-b11 ?
-0'
-04
-b110000 S
-b110 T
-b1 U
-1,
-#46
-0,
-#47
-b10 8
-b10 ;
-b10 @
-b0 )
-b0 7
-b0 ?
-1*
-b10000000010 S
-b111 T
-b110 U
-1,
-#48
-0,
-#49
-b0 8
-b0 ;
-b0 @
-1"
-0*
-1!
-b100001000000 S
-b0 T
-b111 U
-1,
-#50
-b100010 -
-b100010 2
-b100010 :
-0,
-b111000100011100000100010 .
-#51
-1$
-b1 )
-b1 7
-b1 ?
-0"
-0!
-1'
-14
-b101000000010000 S
-b1 T
-b0 U
-1,
-#52
-0,
-#53
-0$
-b11 )
-b11 7
-b11 ?
-0'
-04
-b110000 S
-b110 T
-b1 U
-1,
-#54
-0,
-#55
-b110 +
-b110 9
-b110 <
-b10 8
-b10 ;
-b10 @
-b0 )
-b0 7
-b0 ?
-1*
-b10000000010 S
-b111 T
-b110 U
-1,
-#56
-0,
-#57
-b10 +
-b10 9
-b10 <
-b0 8
-b0 ;
-b0 @
-1"
-0*
-1!
-b100001000000 S
-b0 T
-b111 U
-1,
-#58
-b100 -
-b100 2
-b100 :
-b101011 /
-b101011 3
-b101011 =
-0,
-b10101100011001110000000001000100 .
-#59
-1$
-b1 )
-b1 7
-b1 ?
-0"
-0!
-1'
-14
-b101000000010000 S
-b1 T
-b0 U
-1,
-#60
-0,
-#61
-0$
-b11 )
-b11 7
-b11 ?
-0'
-04
-b110000 S
-b10 T
-b1 U
-1,
-#62
-0,
-#63
-b10 )
-b10 7
-b10 ?
-1*
-b10000100000 S
-b101 T
-b10 U
-1,
-#64
-0,
-#65
-b0 )
-b0 7
-b0 ?
-1(
-0*
-1%
-b10000100000000 S
-b0 T
-b101 U
-1,
-#66
-b10000 -
-b10000 2
-b10000 :
-b100011 /
-b100011 3
-b100011 =
-0,
-b10001100000000100000000001010000 .
-#67
-1$
-b1 )
-b1 7
-b1 ?
-0(
-1'
-0%
-14
-b101000000010000 S
-b1 T
-b0 U
-1,
-#68
-0,
-#69
-0$
-b11 )
-b11 7
-b11 ?
-0'
-04
-b110000 S
-b10 T
-b1 U
-1,
-#70
-0,
-#71
-b10 )
-b10 7
-b10 ?
-1*
-b10000100000 S
-b11 T
-b10 U
-1,
-#72
-0,
-#73
-b0 )
-b0 7
-b0 ?
-1(
-0*
-b100000000 S
-b100 T
-b11 U
-1,
-#74
-0,
-#75
-1&
-0(
-1!
-b100010000000 S
-b0 T
-b100 U
-1,
-#76
 0,

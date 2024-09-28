@@ -1,4 +1,4 @@
-module flopr #(parameter WIDTH = 8) (
+module flopr #(parameter WIDTH = 16) (  // Default width set to 16
     input clk, reset,
     input [WIDTH-1:0] d,
     output reg [WIDTH-1:0] q

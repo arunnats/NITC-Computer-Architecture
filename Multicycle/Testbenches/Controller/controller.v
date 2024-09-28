@@ -1,6 +1,7 @@
 module controller(
     input clk, reset,
-    input [5:0] op, funct,
+    input [3:0] op,
+    input [1:0] cz,
     input zero,
     output pcen, memwrite, irwrite, regwrite,
     output alusrca, iord, memtoreg, regdst,
@@ -17,6 +18,6 @@ module controller(
     pcwrite, memwrite, irwrite, regwrite,
     alusrca, branch, iord, memtoreg, regdst,
     alusrcb, pcsrc, aluop);
-    aludec ad(funct, aluop, alucontrol);
+    aludec ad(cz, aluop, alucontrol);
     assign pcen = pcwrite | (branch & zero);
 endmodule

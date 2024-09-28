@@ -1,4 +1,4 @@
-module mux4 #(parameter WIDTH = 8) (
+module mux4 #(parameter WIDTH = 16) (  // Default width set to 16
     input [WIDTH-1:0] d0, d1, d2, d3,
     input [1:0] s,
     output reg [WIDTH-1:0] y
