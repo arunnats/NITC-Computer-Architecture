@@ -1,7 +1,8 @@
 module mem_tb;  
     reg clk, we;  
-    reg [31:0] a, wd;  
-    wire [31:0] rd; 
+    reg [15:0] a, wd;  
+    wire [15:0] rd; 
+    
     mem uut(clk, we, a, wd, rd); 
     
     always begin 
@@ -20,14 +21,29 @@ module mem_tb;
         $dumpfile("mem_tb.vcd"); 
         $dumpvars(0, mem_tb);  
 
-        a <= 10; //read memory from address 10  
-        #10 a <= 25; //read memory from address 25  
-        #10 a <= 25;  
+        // Read memory from address 10
+        a <= 10;  
+        #10;  
+        
+        // Read memory from address 25
+        a <= 25;  
+        #10;  
+
+        // Write 16-bit value to address 25
         we <= 1;  
-        wd <= 32'habcd1234; //write abcd1234 to address 25 
-        #10 we <= 0;  
-        a <= 5; //read memory from address 5  
-        #10 a <= 25; //read memory from address 25  
-        #10 $finish;  
+        wd <= 16'habcd;  // Write 16-bit value 
+        #10;  
+        
+        we <= 0;  
+        
+        // Read memory from address 5
+        a <= 5;  
+        #10;  
+        
+        // Read memory from address 25
+        a <= 25;  
+        #10;  
+        
+        $finish;  
     end  
-endmodule 
+endmodule

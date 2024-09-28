@@ -1,5 +1,5 @@
 $date
-	Sat Aug 31 21:24:03 2024
+	Sat Sep 28 15:02:27 2024
 $end
 $version
 	Icarus Verilog
@@ -8,45 +8,45 @@ $timescale
 	1ps
 $end
 $scope module flopenr_tb $end
-$var wire 32 ! q [31:0] $end
+$var wire 16 ! q [15:0] $end
 $var parameter 32 " WIDTH $end
 $var reg 1 # clk $end
-$var reg 32 $ d [31:0] $end
+$var reg 16 $ d [15:0] $end
 $var reg 1 % en $end
 $var reg 1 & reset $end
 $scope module uut $end
 $var wire 1 # clk $end
-$var wire 32 ' d [31:0] $end
+$var wire 16 ' d [15:0] $end
 $var wire 1 % en $end
 $var wire 1 & reset $end
 $var parameter 32 ( WIDTH $end
-$var reg 32 ) q [31:0] $end
+$var reg 16 ) q [15:0] $end
 $upscope $end
 $upscope $end
 $enddefinitions $end
 $comment Show the parameter values. $end
 $dumpall
-b100000 (
-b100000 "
+b10000 (
+b10000 "
 $end
 #0
 $dumpvars
-b10101011110011010001001000110100 )
-b10101011110011010001001000110100 '
+b1010101111001101 )
+b1010101111001101 '
 0&
 1%
-b10101011110011010001001000110100 $
+b1010101111001101 $
 1#
-b10101011110011010001001000110100 !
+b1010101111001101 !
 $end
 #1
 0#
 #2
-b10000000000101000000001100 !
-b10000000000101000000001100 )
+b10000000000101 !
+b10000000000101 )
 1#
-b10000000000101000000001100 $
-b10000000000101000000001100 '
+b10000000000101 $
+b10000000000101 '
 #3
 0#
 #4

@@ -7,32 +7,32 @@
 :vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_textio.vpi";
 :vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2005_math.vpi";
 :vpi_module "/usr/lib/x86_64-linux-gnu/ivl/va_math.vpi";
-S_0x5a36525b65b0 .scope module, "sl2_tb" "sl2_tb" 2 2;
+S_0x5be1e801f600 .scope module, "sl2_tb" "sl2_tb" 2 2;
  .timescale -12 -12;
-v0x5a36525c6ff0_0 .var "a", 31 0;
-v0x5a36525c70e0_0 .net "y", 31 0, L_0x5a36525c72d0;  1 drivers
-S_0x5a36525b6740 .scope module, "uut" "sl2" 2 15, 3 1 0, S_0x5a36525b65b0;
+v0x5be1e802fee0_0 .var "a", 15 0;
+v0x5be1e802ffd0_0 .net "y", 15 0, L_0x5be1e80301c0;  1 drivers
+S_0x5be1e801f790 .scope module, "uut" "sl2" 2 16, 3 1 0, S_0x5be1e801f600;
  .timescale 0 0;
-    .port_info 0 /INPUT 32 "a";
-    .port_info 1 /OUTPUT 32 "y";
-v0x5a36525b6920_0 .net *"_ivl_1", 29 0, L_0x5a36525c71b0;  1 drivers
-L_0x7b8fb0e9d018 .functor BUFT 1, C4<00>, C4<0>, C4<0>, C4<0>;
-v0x5a36525c6d10_0 .net/2u *"_ivl_2", 1 0, L_0x7b8fb0e9d018;  1 drivers
-v0x5a36525c6df0_0 .net "a", 31 0, v0x5a36525c6ff0_0;  1 drivers
-v0x5a36525c6eb0_0 .net "y", 31 0, L_0x5a36525c72d0;  alias, 1 drivers
-L_0x5a36525c71b0 .part v0x5a36525c6ff0_0, 0, 30;
-L_0x5a36525c72d0 .concat [ 2 30 0 0], L_0x7b8fb0e9d018, L_0x5a36525c71b0;
-    .scope S_0x5a36525b65b0;
+    .port_info 0 /INPUT 16 "a";
+    .port_info 1 /OUTPUT 16 "y";
+v0x5be1e801f920_0 .net *"_ivl_1", 13 0, L_0x5be1e80300a0;  1 drivers
+L_0x759c15386018 .functor BUFT 1, C4<00>, C4<0>, C4<0>, C4<0>;
+v0x5be1e802fc00_0 .net/2u *"_ivl_2", 1 0, L_0x759c15386018;  1 drivers
+v0x5be1e802fce0_0 .net "a", 15 0, v0x5be1e802fee0_0;  1 drivers
+v0x5be1e802fda0_0 .net "y", 15 0, L_0x5be1e80301c0;  alias, 1 drivers
+L_0x5be1e80300a0 .part v0x5be1e802fee0_0, 0, 14;
+L_0x5be1e80301c0 .concat [ 2 14 0 0], L_0x759c15386018, L_0x5be1e80300a0;
+    .scope S_0x5be1e801f600;
 T_0 ;
-    %vpi_call 2 7 "$dumpfile", "sl2_tb.vcd" {0 0 0};
-    %vpi_call 2 8 "$dumpvars", 32'sb00000000000000000000000000000000, S_0x5a36525b65b0 {0 0 0};
-    %pushi/vec4 4294967295, 0, 32;
-    %store/vec4 v0x5a36525c6ff0_0, 0, 32;
+    %vpi_call 2 8 "$dumpfile", "sl2_tb.vcd" {0 0 0};
+    %vpi_call 2 9 "$dumpvars", 32'sb00000000000000000000000000000000, S_0x5be1e801f600 {0 0 0};
+    %pushi/vec4 65535, 0, 16;
+    %store/vec4 v0x5be1e802fee0_0, 0, 16;
     %delay 1, 0;
-    %pushi/vec4 2882343476, 0, 32;
-    %store/vec4 v0x5a36525c6ff0_0, 0, 32;
+    %pushi/vec4 43981, 0, 16;
+    %store/vec4 v0x5be1e802fee0_0, 0, 16;
     %delay 1, 0;
-    %vpi_call 2 12 "$finish" {0 0 0};
+    %vpi_call 2 13 "$finish" {0 0 0};
     %end;
     .thread T_0;
 # The file index is used to find the file name in the following table.

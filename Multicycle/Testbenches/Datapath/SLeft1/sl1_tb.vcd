@@ -1,5 +1,5 @@
 $date
-	Sat Sep 28 15:04:10 2024
+	Sat Sep 28 15:04:24 2024
 $end
 $version
 	Icarus Verilog
@@ -7,11 +7,11 @@ $end
 $timescale
 	1ps
 $end
-$scope module signext_tb $end
+$scope module sl1_tb $end
 $var wire 16 ! y [15:0] $end
-$var reg 8 " a [7:0] $end
+$var reg 16 " a [15:0] $end
 $scope module uut $end
-$var wire 8 # a [7:0] $end
+$var wire 16 # a [15:0] $end
 $var wire 16 $ y [15:0] $end
 $upscope $end
 $upscope $end
@@ -21,14 +21,14 @@ $dumpall
 $end
 #0
 $dumpvars
-b1111111111110011 $
-b11110011 #
-b11110011 "
-b1111111111110011 !
+b1111111111111110 $
+b1111111111111111 #
+b1111111111111111 "
+b1111111111111110 !
 $end
 #1
-b1001111 !
-b1001111 $
-b1001111 "
-b1001111 #
+b101011110011010 !
+b101011110011010 $
+b1010101111001101 "
+b1010101111001101 #
 #2

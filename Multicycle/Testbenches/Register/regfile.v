@@ -1,11 +1,11 @@
 module regfile(input clk,
     input we3,
-    input [4:0] ra1, ra2, wa3,
-    input [31:0] wd3,
-    output [31:0] rd1, rd2
+    input [2:0] ra1, ra2, wa3,
+    input [15:0] wd3,
+    output [15:0] rd1, rd2
 );
 
-reg [31:0] rf[31:0];
+reg [15:0] rf[15:0];
 // three ported register file
 // read two ports combinationally
 // write third port on rising edge of clock

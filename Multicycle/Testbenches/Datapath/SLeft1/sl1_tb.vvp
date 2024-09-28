@@ -1,0 +1,43 @@
+#! /usr/bin/vvp
+:ivl_version "12.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 12;
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/system.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_sys.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_textio.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2005_math.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/va_math.vpi";
+S_0x556830ae2510 .scope module, "sl1_tb" "sl1_tb" 2 2;
+ .timescale -12 -12;
+v0x556830b2bee0_0 .var "a", 15 0;
+v0x556830b2bfd0_0 .net "y", 15 0, L_0x556830b2c1c0;  1 drivers
+S_0x556830ae26a0 .scope module, "uut" "sl1" 2 16, 3 1 0, S_0x556830ae2510;
+ .timescale -12 -12;
+    .port_info 0 /INPUT 16 "a";
+    .port_info 1 /OUTPUT 16 "y";
+v0x556830ae2830_0 .net *"_ivl_1", 14 0, L_0x556830b2c0a0;  1 drivers
+L_0x7ed0ad3b7018 .functor BUFT 1, C4<0>, C4<0>, C4<0>, C4<0>;
+v0x556830b2bc00_0 .net/2u *"_ivl_2", 0 0, L_0x7ed0ad3b7018;  1 drivers
+v0x556830b2bce0_0 .net "a", 15 0, v0x556830b2bee0_0;  1 drivers
+v0x556830b2bda0_0 .net "y", 15 0, L_0x556830b2c1c0;  alias, 1 drivers
+L_0x556830b2c0a0 .part v0x556830b2bee0_0, 0, 15;
+L_0x556830b2c1c0 .concat [ 1 15 0 0], L_0x7ed0ad3b7018, L_0x556830b2c0a0;
+    .scope S_0x556830ae2510;
+T_0 ;
+    %vpi_call 2 8 "$dumpfile", "sl1_tb.vcd" {0 0 0};
+    %vpi_call 2 9 "$dumpvars", 32'sb00000000000000000000000000000000, S_0x556830ae2510 {0 0 0};
+    %pushi/vec4 65535, 0, 16;
+    %store/vec4 v0x556830b2bee0_0, 0, 16;
+    %delay 1, 0;
+    %pushi/vec4 43981, 0, 16;
+    %store/vec4 v0x556830b2bee0_0, 0, 16;
+    %delay 1, 0;
+    %vpi_call 2 13 "$finish" {0 0 0};
+    %end;
+    .thread T_0;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "sl1_tb.v";
+    "sl1.v";
