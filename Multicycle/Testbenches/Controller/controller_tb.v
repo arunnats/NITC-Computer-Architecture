@@ -26,10 +26,24 @@ module controller_tb;
         zero = 0;  
         
         #2  reset = 1; instr = 0;  
-        #2 reset = 0; instr = 16'b0000_001_001_000_00; // ADD
-        #2 reset = 0; instr = 16'b0000_001_001_000_10; // ADC
-        #2 reset = 0; instr = 16'b0010_001_001_000_00; // NDU
-        #2 reset = 0; instr = 16'b0010_001_001_000_01; // NDZ
+
+        // #2 reset = 1; instr = 16'b0000_001_001_000_0_00; // ADD
+        // #2 reset = 0; instr = 16'b0000_001_001_000_0_10; // ADC
+        // #2 reset = 0; instr = 16'b0010_001_001_000_0_00; // NDU
+        // #2 reset = 0; instr = 16'b0010_001_001_000_0_01; // NDZ
+        // #2 reset = 0; instr = 16'b0100_010_000_010000; // LW (load word)
+        // #2 reset = 0; instr = 16'b0101_010_000_010000; // SW (store word)
+        // #2 reset = 0; instr = 16'b0110_000_001_001000; // BEQ (branch if equal)
+        // #2 reset = 0; instr = 16'b0111_000_000_000_00; // JAL (jump and link)
+
+        // #2 reset = 0; instr = 16'b0000_101_001_001_00; // Another ADD case
+        // #2 reset = 0; instr = 16'b0010_111_001_001_00; // Another NDU case
+        // #2 reset = 0; instr = 16'b0111_000_001_001_00; // Another JAL case
+
+        #2 reset = 0; instr = 16'b0000_001_001_000_0_00; // ADD
+        #2 reset = 0; instr = 16'b0101_010_000_010000; // SW (store word)   
+        #2 reset = 0; instr = 16'b0100_010_000_010000; // LW (load word)
+
         #2 $finish;  
     end  
 endmodule 

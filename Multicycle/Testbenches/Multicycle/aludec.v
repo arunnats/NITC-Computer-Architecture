@@ -1,23 +1,27 @@
 module aludec(
-    input [5:0] funct,
-    input [1:0] aluop,
+    input [1:0] cz, // Carry and Zero flags
+    input [3:0] op, // 4-bit opcode (since your instruction is 16 bits)
     output reg [2:0] alucontrol
 );
 
-    always @( * )
-        case(aluop)
-            3'b000: alucontrol <= 3'b010; // add
-            3'b001: alucontrol <= 3'b010; // sub
-
-            // RTYPE instruction use the 6-bit funct field of instruction to specify ALU operation
-            3'b010: case(funct)
-                6'b100000: alucontrol <= 3'b010; // ADD
-                6'b100010: alucontrol <= 3'b110; // SUB
-                6'b100100: alucontrol <= 3'b000; // AND
-                6'b100101: alucontrol <= 3'b001; // OR
-                6'b101010: alucontrol <= 3'b111; // SLT
-                default: alucontrol <= 3'bxxx; // ???
-            endcase
-    default: alucontrol <= 3'bxxx; // ???
-    endcase
-endmodule 
+    always @(*) begin
+        case(op)
+            4'b0000: begin
+                case(cz)
+                    2'b00: alucontrol <= 3'b010; // ADD
+                    2'b10: alucontrol <= 3'b011; // ADC (Add with Carry)
+                    default: alucontrol <= 3'bxxx; // Undefined
+                endcase
+            end
+            4'b0010: begin
+                case(cz)
+                    2'b00: alucontrol <= 3'b000; // NDU
+                    2'b01: alucontrol <= 3'b001; // NDZ (AND with Zero condition)
+                    default: alucontrol <= 3'bxxx; // Undefined
+                endcase
+            end
+            // Handle other opcodes like LW, SW, BEQ, JAL
+            default: alucontrol <= 3'bxxx; // Undefined
+        endcase
+    end
+endmodule

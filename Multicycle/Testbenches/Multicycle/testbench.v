@@ -2,7 +2,7 @@ module testbench();
     reg clk;  
     reg reset;  
     
-    wire [31:0] writedata, dataadr;  
+    wire [15:0] writedata, dataadr;  
     wire memwrite;  
 
     // keep track of execution status  

@@ -4,43 +4,44 @@ module datapath(input clk, reset,
     input [1:0] alusrcb,
     input [1:0] pcsrc,
     input [2:0] alucontrol,
-    output [5:0] op, funct,
+    output [3:0] op, 
+    output [1:0] cz,
     output zero,
-    output [31:0] adr, writedata,
-    input [31:0] readdata
+    output [15:0] adr, writedata,
+    input [15:0] readdata
 ); 
     // Internal wires 
     wire [4:0] writereg;
-    wire [31:0] pcnext, pc;
-    wire [31:0] instr, data, srca, srcb;
-    wire [31:0] a;
-    wire [31:0] aluresult, aluout;
-    wire [31:0] signimm; // the sign-extended immediate
-    wire [31:0] signimmsh; // the sign-extended immediate shifted left by 2
-    wire [31:0] wd3, rd1, rd2;
+    wire [15:0] pcnext, pc;
+    wire [15:0] instr, data, srca, srcb;
+    wire [15:0] a;
+    wire [15:0] aluresult, aluout;
+    wire [15:0] signimm; // the sign-extended immediate
+    wire [15:0] signimmsh; // the sign-extended immediate shifted left by 2
+    wire [15:0] wd3, rd1, rd2;
 
     // Extracting the op dode and funct fields
-    assign op = instr[31:26];
-    assign funct = instr[5:0];
+    assign op = instr[15:12];
+    assign cz = instr[1:0];
 
     // The datapath
-    flopenr #(32) pcreg(clk, reset, pcen, pcnext, pc);
-    mux2 #(32) adrmux(pc, aluout, iord, adr);
-    flopenr #(32) instrreg(clk, reset, irwrite, readdata, instr);
-    flopr #(32) datareg(clk, reset, readdata, data);
-    mux2 #(5) regdstmux(instr[20:16], instr[15:11], regdst, writereg);
-    mux2 #(32) wdmux(aluout, data, memtoreg, wd3);
-    regfile rf(clk, regwrite, instr[25:21], instr[20:16],
+    flopenr #(16) pcreg(clk, reset, pcen, pcnext, pc);
+    mux2 #(16) adrmux(pc, aluout, iord, adr);
+    flopenr #(16) instrreg(clk, reset, irwrite, readdata, instr);
+    flopr #(16) datareg(clk, reset, readdata, data);
+    mux2 #(5) regdstmux(instr[7:6], instr[5:3], regdst, writereg);
+    mux2 #(16) wdmux(aluout, data, memtoreg, wd3);
+    regfile rf(clk, regwrite, instr[11:9], instr[8:6],
     writereg, wd3, rd1, rd2);
-    signext se(instr[15:0], signimm);
-    sl2 immsh(signimm, signimmsh);
-    flopr #(32) areg(clk, reset, rd1, a);
-    flopr #(32) breg(clk, reset, rd2, writedata);
-    mux2 #(32) srcamux(pc, a, alusrca, srca);
-    mux4 #(32) srcbmux(writedata, 32'b100, signimm, signimmsh,
+    signext se(instr[8:0], signimm);
+    sl1 immsh(signimm, signimmsh);
+    flopr #(16) areg(clk, reset, rd1, a);
+    flopr #(16) breg(clk, reset, rd2, writedata);
+    mux2 #(16) srcamux(pc, a, alusrca, srca);
+    mux4 #(16) srcbmux(writedata, 16'b100, signimm, signimmsh,
     alusrcb, srcb);
     alu alu(srca, srcb, alucontrol, aluresult, zero);
-    flopr #(32) alureg(clk, reset, aluresult, aluout);
-    mux3 #(32) pcmux(aluresult, aluout,
-    {pc[31:28], instr[25:0], 2'b00}, pcsrc, pcnext);
+    flopr #(16) alureg(clk, reset, aluresult, aluout);
+    mux3 #(16) pcmux(aluresult, aluout,
+    {pc[31:28], instr[25:0], 2'b00}, pcsrc, pcnext); //idk what to do here
 endmodule

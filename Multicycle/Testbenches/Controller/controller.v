@@ -18,6 +18,6 @@ module controller(
     pcwrite, memwrite, irwrite, regwrite,
     alusrca, branch, iord, memtoreg, regdst,
     alusrcb, pcsrc, aluop);
-    aludec ad(cz, aluop, alucontrol);
+    aludec ad(cz, op, alucontrol);
     assign pcen = pcwrite | (branch & zero);
 endmodule
