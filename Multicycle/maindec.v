@@ -1,6 +1,6 @@
 module maindec(
     input clk, reset,
-    input [5:0] op,
+    input [3:0] op,
     output pcwrite, memwrite, irwrite, regwrite,
     output alusrca, branch, iord, memtoreg, regdst,
     output [1:0] alusrcb,
@@ -23,12 +23,13 @@ module maindec(
     parameter JUMP = 5'b01011; // State b
 
     // MIPS Instruction Opcodes
-    parameter LW = 6'b100011; // load word lw
-    parameter SW = 6'b101011; // store word sw
-    parameter RTYPE = 6'b000000; // R-type
-    parameter BEQ = 6'b000100; // branch if equal beq
-    parameter ADDI = 6'b001000; // add immediate addi
-    parameter J = 6'b000010; // jump j
+    parameter LW = 4'b1010; // load word lw
+    parameter SW = 4'b1001; // store word sw
+    parameter ADD = 4'b0000; // ADD-type
+    parameter ND = 4'b0010; // ND-type
+    parameter BEQ = 4'b1011; // branch if equal beq
+    //parameter J = 4'b1111; // jump j
+    parameter JAL = 4'b1101; // jump jal
     reg [4:0] state, nextstate;
     reg [16:0] controls; 
 

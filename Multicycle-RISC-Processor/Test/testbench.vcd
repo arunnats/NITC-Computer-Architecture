@@ -1,0 +1,649 @@
+$date
+	Tue Sep 24 20:29:40 2024
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module RISC15 $end
+$var wire 1 ! clk $end
+$var wire 1 " proc_rst $end
+$var wire 1 # wIR $end
+$var wire 1 $ wAtmp $end
+$var wire 1 % memread $end
+$var wire 16 & memDataOut [15:0] $end
+$var wire 3 ' lm_sm_wadd [2:0] $end
+$var wire 3 ( counter [2:0] $end
+$var wire 1 ) compare $end
+$var wire 1 * clk1 $end
+$var wire 1 + T1write $end
+$var wire 16 , T1out [15:0] $end
+$var wire 6 - StateID [5:0] $end
+$var wire 16 . Mux9_memDataIn_out [15:0] $end
+$var wire 1 / Mux9_memDataIn $end
+$var wire 1 0 Mux8_memwrite_out $end
+$var wire 2 1 Mux8_memwrite [1:0] $end
+$var wire 1 2 Mux7_RF_write_out $end
+$var wire 1 3 Mux6_RF_dataIn $end
+$var wire 2 4 Mux5_RF_read2 [1:0] $end
+$var wire 3 5 Mux4_RF_wadd [2:0] $end
+$var wire 2 6 Mux3_RF_wen [1:0] $end
+$var wire 3 7 Mux2_alu_A [2:0] $end
+$var wire 3 8 Mux1_alu_B [2:0] $end
+$var wire 16 9 IRout [15:0] $end
+$var wire 1 : CZ_en $end
+$var wire 1 ; ALU_op $end
+$scope module __clockgen $end
+$var wire 1 ! clk $end
+$var reg 1 * clk1 $end
+$var reg 21 < clk_counter [20:0] $end
+$upscope $end
+$scope module __controller $end
+$var wire 1 ! clk $end
+$var wire 1 " proc_rst $end
+$var wire 8 = zeroPost_out [7:0] $end
+$var wire 3 > lm_sm_wadd [2:0] $end
+$var wire 1 ) compare $end
+$var wire 1 2 Mux7_RF_write_out $end
+$var wire 16 ? IR [15:0] $end
+$var parameter 6 @ halt $end
+$var parameter 6 A halt0 $end
+$var reg 1 ; ALU_op $end
+$var reg 1 : CZ_en $end
+$var reg 3 B Mux1_alu_B [2:0] $end
+$var reg 3 C Mux2_alu_A [2:0] $end
+$var reg 2 D Mux3_RF_wen [1:0] $end
+$var reg 3 E Mux4_RF_wadd [2:0] $end
+$var reg 2 F Mux5_RF_read2 [1:0] $end
+$var reg 1 3 Mux6_RF_dataIn $end
+$var reg 2 G Mux8_memwrite [1:0] $end
+$var reg 1 / Mux9_memDataIn $end
+$var reg 6 H StateID [5:0] $end
+$var reg 1 + T1write $end
+$var reg 3 I counter [2:0] $end
+$var reg 1 % memread $end
+$var reg 1 J priEn_enable $end
+$var reg 1 K start_setPos $end
+$var reg 1 $ wAtmp $end
+$var reg 1 # wIR $end
+$scope module __priEn $end
+$var wire 1 J enable $end
+$var wire 8 L imm8 [7:0] $end
+$var reg 3 M firstOnePosition [2:0] $end
+$upscope $end
+$scope module __setPZ $end
+$var wire 8 N imm8 [7:0] $end
+$var wire 3 O position [2:0] $end
+$var wire 1 K start $end
+$var reg 8 P out [7:0] $end
+$upscope $end
+$upscope $end
+$scope module __datapath $end
+$var wire 1 ; ALU_op $end
+$var wire 1 : CZ_en $end
+$var wire 3 Q Mux1_alu_B [2:0] $end
+$var wire 3 R Mux2_alu_A [2:0] $end
+$var wire 2 S Mux3_RF_wen [1:0] $end
+$var wire 3 T Mux4_RF_wadd [2:0] $end
+$var wire 2 U Mux5_RF_read2 [1:0] $end
+$var wire 1 3 Mux6_RF_dataIn $end
+$var wire 2 V Mux8_memwrite [1:0] $end
+$var wire 1 / Mux9_memDataIn $end
+$var wire 1 + T1write $end
+$var wire 1 ! clk $end
+$var wire 3 W counter [2:0] $end
+$var wire 3 X lm_sm_wadd [2:0] $end
+$var wire 1 " proc_rst $end
+$var wire 1 $ wAtmp $end
+$var wire 1 # wIR $end
+$var wire 1 Y zero $end
+$var wire 16 Z tmpAout [15:0] $end
+$var wire 16 [ shift7Out [15:0] $end
+$var wire 16 \ memDataOut [15:0] $end
+$var wire 16 ] imm9Out [15:0] $end
+$var wire 16 ^ imm6Out [15:0] $end
+$var wire 1 ) compare $end
+$var wire 1 _ carry $end
+$var wire 16 ` T1out [15:0] $end
+$var wire 16 a RFout2 [15:0] $end
+$var wire 16 b RFout1 [15:0] $end
+$var wire 16 c Mux9_memDataIn_out [15:0] $end
+$var wire 1 0 Mux8_memwrite_out $end
+$var wire 1 2 Mux7_RF_write_out $end
+$var wire 16 d Mux6_RF_dataIn_out [15:0] $end
+$var wire 3 e Mux5_RF_read2_out [2:0] $end
+$var wire 3 f Mux4_RF_wadd_out [2:0] $end
+$var wire 1 g Mux3_RF_wen_out $end
+$var wire 16 h Mux2_alu_A_out [15:0] $end
+$var wire 16 i Mux1_alu_B_out [15:0] $end
+$var wire 16 j IRout [15:0] $end
+$var wire 1 k CZout $end
+$var wire 16 l ALU_out [15:0] $end
+$var reg 16 m A [15:0] $end
+$var reg 16 n B [15:0] $end
+$scope module __CZ $end
+$var wire 2 o IR_CZ [1:0] $end
+$var wire 1 : en $end
+$var wire 1 k out $end
+$var wire 1 Y inZ $end
+$var wire 1 _ inC $end
+$var reg 1 p C $end
+$var reg 1 q Z $end
+$upscope $end
+$scope module __IR $end
+$var wire 1 ! clk $end
+$var wire 1 r reset $end
+$var wire 1 # write $end
+$var wire 16 s in [15:0] $end
+$var reg 16 t out [15:0] $end
+$upscope $end
+$scope module __Mux1_alu_B $end
+$var wire 16 u inp0 [15:0] $end
+$var wire 16 v inp1 [15:0] $end
+$var wire 16 w inp2 [15:0] $end
+$var wire 16 x inp4 [15:0] $end
+$var wire 16 y inp5 [15:0] $end
+$var wire 16 z inp6 [15:0] $end
+$var wire 16 { inp7 [15:0] $end
+$var wire 3 | sel [2:0] $end
+$var wire 16 } inp3 [15:0] $end
+$var reg 16 ~ out [15:0] $end
+$upscope $end
+$scope module __Mux2_alu_A $end
+$var wire 16 !" inp0 [15:0] $end
+$var wire 16 "" inp1 [15:0] $end
+$var wire 16 #" inp5 [15:0] $end
+$var wire 16 $" inp7 [15:0] $end
+$var wire 3 %" sel [2:0] $end
+$var wire 16 &" inp6 [15:0] $end
+$var wire 16 '" inp4 [15:0] $end
+$var wire 16 (" inp3 [15:0] $end
+$var wire 16 )" inp2 [15:0] $end
+$var reg 16 *" out [15:0] $end
+$upscope $end
+$scope module __Mux3_RF_wen $end
+$var wire 1 +" inp0 $end
+$var wire 1 ," inp1 $end
+$var wire 1 k inp2 $end
+$var wire 2 -" sel [1:0] $end
+$var wire 1 2 inp3 $end
+$var reg 1 g out $end
+$upscope $end
+$scope module __Mux4_RF_wadd $end
+$var wire 3 ." inp0 [2:0] $end
+$var wire 3 /" inp1 [2:0] $end
+$var wire 3 0" inp2 [2:0] $end
+$var wire 3 1" inp3 [2:0] $end
+$var wire 3 2" inp4 [2:0] $end
+$var wire 3 3" inp5 [2:0] $end
+$var wire 3 4" inp6 [2:0] $end
+$var wire 3 5" inp7 [2:0] $end
+$var wire 3 6" sel [2:0] $end
+$var reg 3 7" out [2:0] $end
+$upscope $end
+$scope module __Mux5_RF_read2 $end
+$var wire 3 8" inp0 [2:0] $end
+$var wire 3 9" inp1 [2:0] $end
+$var wire 3 :" inp2 [2:0] $end
+$var wire 3 ;" inp3 [2:0] $end
+$var wire 2 <" sel [1:0] $end
+$var reg 3 =" out [2:0] $end
+$upscope $end
+$scope module __Mux6_RF_dataIn $end
+$var wire 1 3 sel $end
+$var wire 16 >" inp1 [15:0] $end
+$var wire 16 ?" inp0 [15:0] $end
+$var reg 16 @" out [15:0] $end
+$upscope $end
+$scope module __Mux7_RF_write $end
+$var wire 1 A" inp0 $end
+$var wire 1 B" inp1 $end
+$var wire 1 C" inp2 $end
+$var wire 1 D" inp3 $end
+$var wire 1 E" inp4 $end
+$var wire 1 F" inp5 $end
+$var wire 1 G" inp6 $end
+$var wire 1 H" inp7 $end
+$var wire 3 I" sel [2:0] $end
+$var reg 1 2 out $end
+$upscope $end
+$scope module __Mux8_memwrite $end
+$var wire 1 J" inp0 $end
+$var wire 1 K" inp1 $end
+$var wire 1 2 inp2 $end
+$var wire 1 L" inp3 $end
+$var wire 2 M" sel [1:0] $end
+$var reg 1 0 out $end
+$upscope $end
+$scope module __Mux9_memDataIn $end
+$var wire 16 N" inp0 [15:0] $end
+$var wire 16 O" inp1 [15:0] $end
+$var wire 1 / sel $end
+$var reg 16 P" out [15:0] $end
+$upscope $end
+$scope module __RF $end
+$var wire 1 ! clk $end
+$var wire 16 Q" in [15:0] $end
+$var wire 1 " proc_rst $end
+$var wire 3 R" readAdd1 [2:0] $end
+$var wire 3 S" readAdd2 [2:0] $end
+$var wire 1 T" reset $end
+$var wire 1 g write $end
+$var wire 3 U" write_select [2:0] $end
+$var wire 8 V" write_reg_enable [7:0] $end
+$var wire 8 W" write_line_enable [7:0] $end
+$var wire 16 X" reg_data7 [15:0] $end
+$var wire 16 Y" reg_data6 [15:0] $end
+$var wire 16 Z" reg_data5 [15:0] $end
+$var wire 16 [" reg_data4 [15:0] $end
+$var wire 16 \" reg_data3 [15:0] $end
+$var wire 16 ]" reg_data2 [15:0] $end
+$var wire 16 ^" reg_data1 [15:0] $end
+$var wire 16 _" reg_data0 [15:0] $end
+$var wire 16 `" out2 [15:0] $end
+$var wire 16 a" out1 [15:0] $end
+$scope module __demux $end
+$var wire 3 b" sel [2:0] $end
+$var reg 8 c" out [7:0] $end
+$upscope $end
+$scope module __mux1 $end
+$var wire 3 d" sel [2:0] $end
+$var wire 16 e" inp7 [15:0] $end
+$var wire 16 f" inp6 [15:0] $end
+$var wire 16 g" inp5 [15:0] $end
+$var wire 16 h" inp4 [15:0] $end
+$var wire 16 i" inp3 [15:0] $end
+$var wire 16 j" inp2 [15:0] $end
+$var wire 16 k" inp1 [15:0] $end
+$var wire 16 l" inp0 [15:0] $end
+$var reg 16 m" out [15:0] $end
+$upscope $end
+$scope module __mux2 $end
+$var wire 3 n" sel [2:0] $end
+$var wire 16 o" inp7 [15:0] $end
+$var wire 16 p" inp6 [15:0] $end
+$var wire 16 q" inp5 [15:0] $end
+$var wire 16 r" inp4 [15:0] $end
+$var wire 16 s" inp3 [15:0] $end
+$var wire 16 t" inp2 [15:0] $end
+$var wire 16 u" inp1 [15:0] $end
+$var wire 16 v" inp0 [15:0] $end
+$var reg 16 w" out [15:0] $end
+$upscope $end
+$scope module r0 $end
+$var wire 1 ! clk $end
+$var wire 16 x" in [15:0] $end
+$var wire 1 " proc_rst $end
+$var wire 1 T" reset $end
+$var wire 1 y" write $end
+$var reg 16 z" out [15:0] $end
+$upscope $end
+$scope module r1 $end
+$var wire 1 ! clk $end
+$var wire 16 {" in [15:0] $end
+$var wire 1 " proc_rst $end
+$var wire 1 T" reset $end
+$var wire 1 |" write $end
+$var reg 16 }" out [15:0] $end
+$upscope $end
+$scope module r2 $end
+$var wire 1 ! clk $end
+$var wire 16 ~" in [15:0] $end
+$var wire 1 " proc_rst $end
+$var wire 1 T" reset $end
+$var wire 1 !# write $end
+$var reg 16 "# out [15:0] $end
+$upscope $end
+$scope module r3 $end
+$var wire 1 ! clk $end
+$var wire 16 ## in [15:0] $end
+$var wire 1 " proc_rst $end
+$var wire 1 T" reset $end
+$var wire 1 $# write $end
+$var reg 16 %# out [15:0] $end
+$upscope $end
+$scope module r4 $end
+$var wire 1 ! clk $end
+$var wire 16 &# in [15:0] $end
+$var wire 1 " proc_rst $end
+$var wire 1 T" reset $end
+$var wire 1 '# write $end
+$var reg 16 (# out [15:0] $end
+$upscope $end
+$scope module r5 $end
+$var wire 1 ! clk $end
+$var wire 16 )# in [15:0] $end
+$var wire 1 " proc_rst $end
+$var wire 1 T" reset $end
+$var wire 1 *# write $end
+$var reg 16 +# out [15:0] $end
+$upscope $end
+$scope module r6 $end
+$var wire 1 ! clk $end
+$var wire 16 ,# in [15:0] $end
+$var wire 1 " proc_rst $end
+$var wire 1 T" reset $end
+$var wire 1 -# write $end
+$var reg 16 .# out [15:0] $end
+$upscope $end
+$scope module r7 $end
+$var wire 1 ! clk $end
+$var wire 16 /# in [15:0] $end
+$var wire 1 " proc_rst $end
+$var wire 1 T" reset $end
+$var wire 1 0# write $end
+$var reg 16 1# out [15:0] $end
+$upscope $end
+$upscope $end
+$scope module __T1 $end
+$var wire 1 ! clk $end
+$var wire 1 " proc_rst $end
+$var wire 1 2# reset $end
+$var wire 1 + write $end
+$var wire 16 3# in [15:0] $end
+$var reg 16 4# out [15:0] $end
+$upscope $end
+$scope module __alu $end
+$var wire 1 ; ALU_op $end
+$var wire 16 5# in1 [15:0] $end
+$var wire 16 6# in2 [15:0] $end
+$var wire 1 Y zero $end
+$var wire 16 7# outNAND [15:0] $end
+$var wire 16 8# outADD [15:0] $end
+$var wire 16 9# out [15:0] $end
+$var wire 1 ) compare $end
+$var wire 1 _ carry $end
+$scope module __add $end
+$var wire 16 :# in1 [15:0] $end
+$var wire 16 ;# in2 [15:0] $end
+$var wire 16 <# out [15:0] $end
+$upscope $end
+$scope module __carry_gen $end
+$var wire 1 _ carry $end
+$var wire 16 =# in1 [15:0] $end
+$var wire 16 ># in2 [15:0] $end
+$var wire 1 ; op_code $end
+$var reg 16 ?# tmp_add [15:0] $end
+$var reg 1 @# tmp_carry $end
+$upscope $end
+$scope module __nand $end
+$var wire 16 A# in1 [15:0] $end
+$var wire 16 B# in2 [15:0] $end
+$var wire 16 C# out [15:0] $end
+$upscope $end
+$upscope $end
+$scope module __imm6 $end
+$var wire 6 D# in [5:0] $end
+$var wire 16 E# out [15:0] $end
+$upscope $end
+$scope module __imm9 $end
+$var wire 9 F# in [8:0] $end
+$var wire 16 G# out [15:0] $end
+$upscope $end
+$scope module __shift7 $end
+$var wire 9 H# in [8:0] $end
+$var wire 16 I# out [15:0] $end
+$upscope $end
+$scope module __tmpA $end
+$var wire 1 ! clk $end
+$var wire 16 J# in [15:0] $end
+$var wire 1 " proc_rst $end
+$var wire 1 K# reset $end
+$var wire 1 $ write $end
+$var reg 16 L# out [15:0] $end
+$upscope $end
+$upscope $end
+$scope module __mem $end
+$var wire 6 M# address [5:0] $end
+$var wire 1 ! clk $end
+$var wire 16 N# in [15:0] $end
+$var wire 1 " proc_rst $end
+$var wire 1 % read $end
+$var wire 1 0 write $end
+$var reg 16 O# out [15:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+b111111 A
+b111110 @
+$end
+#0
+$dumpvars
+bx O#
+bx N#
+bx M#
+bx L#
+1K#
+bx J#
+bx0000000 I#
+bx H#
+bx G#
+bx F#
+bx E#
+bx D#
+bx C#
+bx B#
+bx A#
+x@#
+bx ?#
+bx >#
+bx =#
+bx <#
+bx ;#
+bx :#
+bx 9#
+bx 8#
+bx 7#
+bx 6#
+bx 5#
+bx 4#
+bx 3#
+12#
+bx 1#
+x0#
+bx /#
+bx .#
+x-#
+bx ,#
+bx +#
+x*#
+bx )#
+bx (#
+x'#
+bx &#
+bx %#
+x$#
+bx ##
+bx "#
+x!#
+bx ~"
+bx }"
+x|"
+bx {"
+bx z"
+xy"
+bx x"
+bx w"
+bx v"
+bx u"
+bx t"
+bx s"
+bx r"
+bx q"
+bx p"
+bx o"
+bx n"
+bx m"
+bx l"
+bx k"
+bx j"
+bx i"
+bx h"
+bx g"
+bx f"
+bx e"
+bx d"
+bx c"
+bx b"
+bx a"
+bx `"
+bx _"
+bx ^"
+bx ]"
+bx \"
+bx ["
+bx Z"
+bx Y"
+bx X"
+bx W"
+bx V"
+bx U"
+1T"
+bx S"
+bx R"
+bx Q"
+bx P"
+bx O"
+bx N"
+bx M"
+0L"
+1K"
+0J"
+bx I"
+xH"
+xG"
+xF"
+xE"
+xD"
+xC"
+xB"
+xA"
+bx @"
+bx ?"
+bx >"
+bx ="
+bx <"
+b0 ;"
+b111 :"
+bx 9"
+bx 8"
+bx 7"
+bx 6"
+b0 5"
+b0 4"
+b0 3"
+bx 2"
+b111 1"
+bx 0"
+bx /"
+bx ."
+bx -"
+1,"
+0+"
+bx *"
+bx0000000 )"
+bx ("
+bx '"
+bx &"
+bx %"
+b0 $"
+bx #"
+b1 ""
+b0 !"
+bx ~
+bx }
+bx |
+b0 {
+b0 z
+b0 y
+b0xxx x
+bx w
+b1 v
+b0 u
+bx t
+bx s
+1r
+xq
+xp
+bx o
+bx n
+bx m
+bx l
+xk
+bx j
+bx i
+bx h
+xg
+bx f
+bx e
+bx d
+bx c
+bx b
+bx a
+bx `
+x_
+bx ^
+bx ]
+bx \
+bx0000000 [
+bx Z
+xY
+bx X
+bx W
+bx V
+bx U
+bx T
+bx S
+bx R
+bx Q
+bx P
+bx O
+bx N
+bx M
+bx L
+xK
+xJ
+bx I
+bx H
+bx G
+bx F
+bx E
+bx D
+bx C
+bx B
+bx ?
+bx >
+bx =
+b0 <
+x;
+x:
+bx 9
+bx 8
+bx 7
+bx 6
+bx 5
+bx 4
+x3
+x2
+bx 1
+x0
+x/
+bx .
+bx -
+bx ,
+x+
+1*
+x)
+bx (
+bx '
+bx &
+x%
+x$
+x#
+z"
+z!
+$end

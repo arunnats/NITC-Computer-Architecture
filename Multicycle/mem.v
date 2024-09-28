@@ -1,10 +1,10 @@
 module mem(
     input clk, we,
-    input [31:0] a, wd,
-    output [31:0] rd
+    input [15:0] a, wd,
+    output [15:0] rd
 );
 
-    reg [31:0] RAM[63:0];
+    reg [15:0] RAM[63:0];
 
     initial
         begin  
@@ -27,9 +27,9 @@ module mem(
             RAM[16]   <=    32'h20020001;  
             RAM[17]   <=    32'hac020054;  
         end 
-    assign rd = RAM[a[31:2]]; // word aligned
+    assign rd = RAM[a[15:2]]; // word aligned
 
     always @(posedge clk)
         if (we)
-        RAM[a[31:2]] <= wd;
+        RAM[a[15:2]] <= wd;
 endmodule 

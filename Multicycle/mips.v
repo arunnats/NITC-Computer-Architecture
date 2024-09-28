@@ -1,7 +1,7 @@
 module mips(input clk, reset,
-    output [31:0] adr, writedata,
+    output [15:0] adr, writedata,
     output memwrite,
-    input [31:0] readdata
+    input [15:0] readdata
 );
 
     wire zero, pcen, irwrite, regwrite,
@@ -9,11 +9,12 @@ module mips(input clk, reset,
     wire [1:0] alusrcb;
     wire [1:0] pcsrc;
     wire [2:0] alucontrol;
-    wire [5:0] op, funct; 
+    wire [3:0] op, 
+    wire [1:0] cz; 
 
     // The control unit receives the current instruction from the datapath and tells the
     // datapath how to execute that instruction.
-    controller c(clk, reset, op, funct, zero,
+    controller c(clk, reset, op, cz, zero,
     pcen, memwrite, irwrite, regwrite,
     alusrca, iord, memtoreg, regdst,
     alusrcb, pcsrc, alucontrol);
@@ -25,7 +26,7 @@ module mips(input clk, reset,
     pcen, irwrite, regwrite,
     alusrca, iord, memtoreg, regdst,
     alusrcb, pcsrc, alucontrol,
-    op, funct, zero,
+    op, cz, zero,
     adr, writedata, readdata);
     
 endmodule 
