@@ -1,6 +1,6 @@
-module alu( input [31:0] A, B,
+module alu( input [15:0] A, B,
     input [2:0] F,
-    output reg [31:0] Y,
+    output reg [15:0] Y,
     output Zero
 );
     always @ ( * )
@@ -13,5 +13,5 @@ module alu( input [31:0] A, B,
             3'b111: Y <= A < B ? 1:0; //SLT
             default: Y <= 0; //default to 0, probably wont happen
         endcase
-    assign Zero = (Y == 32'b0);
+    assign Zero = (Y == 16'b0);
 endmodule 

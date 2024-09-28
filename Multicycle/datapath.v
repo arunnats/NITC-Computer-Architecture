@@ -38,10 +38,10 @@ module datapath(input clk, reset,
     flopr #(16) areg(clk, reset, rd1, a);
     flopr #(16) breg(clk, reset, rd2, writedata);
     mux2 #(16) srcamux(pc, a, alusrca, srca);
-    mux4 #(16) srcbmux(writedata, 32'b100, signimm, signimmsh,
+    mux4 #(16) srcbmux(writedata, 16'b100, signimm, signimmsh,
     alusrcb, srcb);
     alu alu(srca, srcb, alucontrol, aluresult, zero);
     flopr #(16) alureg(clk, reset, aluresult, aluout);
     mux3 #(16) pcmux(aluresult, aluout,
-    {pc[31:28], instr[25:0], 2'b00}, pcsrc, pcnext);
+    {pc[31:28], instr[25:0], 2'b00}, pcsrc, pcnext); //idk what to do here
 endmodule

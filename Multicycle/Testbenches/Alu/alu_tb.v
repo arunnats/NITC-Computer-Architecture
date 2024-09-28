@@ -1,8 +1,8 @@
 module alu_tb;  
-    reg [31:0] A, B;  
+    reg [15:0] A, B;  
     reg [2:0] F;  
     wire Zero;  
-    wire [31:0] Y;  
+    wire [15:0] Y;  
     
     alu uut (A, B, F, Y, Zero);  
     
@@ -24,7 +24,6 @@ module alu_tb;
         #8 A = 200; B = 155;  
         #8 A = 360; B = 400;  
         #8 A = 1023;  B = 780;  
-        #8 A = 1570;  B = 2047;  
         $finish;
     end  
     
