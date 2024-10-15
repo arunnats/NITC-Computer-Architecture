@@ -13,7 +13,7 @@ void h_pivot_decomp(float *a, int *p, int *q, int N){
     float ftmp;
     for (k=0;k<N;k++){
         pi=-1,pj=-1,max=0.0;
-        //find pivot in submatrix a(k:N,k:N)
+        // Find pivot in submatrix a(k:N,k:N)
         for (i=k;i<N;i++) {
             for (j=k;j<N;j++) {
                 if (fabs(a(i,j))>max){
@@ -41,15 +41,15 @@ void h_pivot_decomp(float *a, int *p, int *q, int N){
             a(i,k)=a(i,pj);
             a(i,pj)=ftmp;
         }
-        //END PIVOT
+        // END PIVOT
 
-        //check pivot size and decompose
+        // Check pivot size and decompose
         if ((fabs(a(k,k))>TINY)){
             for (i=k+1;i<N;i++){
-                //Column normalisation
+                // Column normalization
                 ftmp=a(i,k)/=a(k,k);
                 for (j=k+1;j<N;j++){
-                    //a(ik)*a(kj) subtracted from lower right submatrix elements
+                    // a(ik) * a(kj) subtracted from lower-right submatrix elements
                     a(i,j)-=(ftmp*a(k,j));
                 }
             }
@@ -58,49 +58,54 @@ void h_pivot_decomp(float *a, int *p, int *q, int N){
 }
 
 void h_solve(float *a, float *x, int *p, int *q, int N){
-    int i,ii=0,ip,j,tmp;
+    int i, ii = 0, ip, j, tmp;
     float ftmp;
-    float xtmp[MAX_SIZE]; // Changed to use MAX_SIZE
-    // Swap rows (x=Px)
-    puts("x=Px Stage");
-    for (i=0; i<N; i++){
-        xtmp[i]=x[p[i]]; //value that should be here
-        printf("x:%.17lf\n", xtmp[i]); // Increased precision
-    }
-    // Lx=x
-    puts("Lx=x Stage");
-    for (i=0;i<N;i++){
-        ftmp=xtmp[i];
-        if (ii != 0)
-            for (j=ii-1;j<i;j++)
-                ftmp-=a(i,j)*xtmp[j];
-        else
-            if (ftmp!=0.0)
-                ii=i+1;
-        xtmp[i]=ftmp;
-        printf("x:%.17lf\n", xtmp[i]);
-    }
-    puts("Ux=x");
-    
-    //backward substitution
-    //solves Uy=z
-    xtmp[N-1]/=a(N-1,N-1);
-    for (i=N-2;i>=0;i--){
-        ftmp=xtmp[i];
-        for (j=i+1;j<N;j++){
-            ftmp-=a(i,j)*xtmp[j];
-        }
-        xtmp[i]=(ftmp)/a(i,i);
-    }
-    for (i=0;i<N;i++)
-        printf("x:%.17lf\n", xtmp[i]);
+    float xtmp[MAX_SIZE]; // Adjusted for MAX_SIZE
+    int inverse_q[MAX_SIZE]; // To store the inverse of q_pivot
 
-    // Last bit
-    //solves x=Qy
-    puts("x=Qx Stage");
-    for (i=0;i<N;i++){
-        x[i]=xtmp[q[i]];
-        printf("x:%.17lf\n", x[i]);
+    // Generate inverse of q_pivot
+    for (i = 0; i < N; i++) {
+        inverse_q[q[i]] = i;
+    }
+
+    // Swap rows (x = Px)
+    puts("x = Px Stage");
+    for (i = 0; i < N; i++) {
+        xtmp[i] = x[p[i]]; // Value that should be here
+        printf("x: %.17lf, q: %d\n", xtmp[i], q[i]); // Increased precision
+    }
+
+    // Lx = x
+    puts("Lx = x Stage");
+    for (i = 0; i < N; i++) {
+        ftmp = xtmp[i];
+        if (ii != 0)
+            for (j = ii - 1; j < i; j++)
+                ftmp -= a(i, j) * xtmp[j];
+        else if (ftmp != 0.0)
+            ii = i + 1;
+        xtmp[i] = ftmp;
+        printf("x: %.17lf, q: %d\n", xtmp[i], q[i]);
+    }
+
+    // Ux = x
+    puts("Ux = x");
+
+    // Backward substitution
+    xtmp[N - 1] /= a(N - 1, N - 1);
+    for (i = N - 2; i >= 0; i--) {
+        ftmp = xtmp[i];
+        for (j = i + 1; j < N; j++) {
+            ftmp -= a(i, j) * xtmp[j];
+        }
+        xtmp[i] = (ftmp) / a(i, i);
+    }
+
+    // Apply reverse column pivoting
+    puts("Reordering solution to match original variable order");
+    for (i = 0; i < N; i++) {
+        x[i] = xtmp[inverse_q[i]]; // Reorder based on inverse of q_pivot
+        printf("x%d = %.15f\n", i + 1, x[i]);
     }
 }
 
@@ -133,7 +138,7 @@ int main() {
     // Read matrix A
     for (int i = 0; i < N; i++)
         for (int j = 0; j < N; j++)
-            fscanf(file, "%f", &a(i,j));
+            fscanf(file, "%f", &a(i, j));
 
     // Read vector B
     for (int i = 0; i < N; i++)
