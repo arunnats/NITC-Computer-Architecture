@@ -8,7 +8,7 @@
 
 __global__ void pivot_decomposition(float *a, int *p, int *q, int N) {
     int k = threadIdx.x;
-    
+        
     if (k < N) {
         int i, j;
         int pi = -1, pj = -1;
