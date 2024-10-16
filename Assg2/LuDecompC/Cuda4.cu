@@ -9,7 +9,7 @@
   if (cuda_err_code != cudaSuccess) { \
     printf("%s failed with code %d\n", #__VA_ARGS__, cuda_err_code); \
     abort(); \
-  } \
+  } \ 
 }
 
 #ifndef max
