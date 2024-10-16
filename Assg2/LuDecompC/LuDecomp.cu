@@ -1,158 +1,153 @@
-#include <stdio.h>
+#include <utility>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <math.h>
-#include <cuda.h>
 
-#define TINY 1e-20
-#define MAX_SIZE 100 // Maximum size for the matrix
-
-#define CUDA_CALL(x) do { if((x) != cudaSuccess) { \
-    printf("Error at %s:%d\n",__FILE__,__LINE__); \
-    exit(EXIT_FAILURE); }} while(0)
-
-// GPU kernel for row swaps
-__global__ void swap_rows(float* a, int* p, int k, int pi, int N) {
-    int j = blockIdx.x * blockDim.x + threadIdx.x;
-    if (j < N) {
-        float temp = a[k * N + j];
-        a[k * N + j] = a[pi * N + j];
-        a[pi * N + j] = temp;
-    }
+#define CUDA_CHK(...) { \
+  cudaError_t cuda_err_code = __VA_ARGS__; \
+  if (cuda_err_code != cudaSuccess) { \
+    printf("%s failed with code %d\n", #__VA_ARGS__, cuda_err_code); \
+    abort(); \
+  } \
 }
 
-// GPU kernel for column swaps
-__global__ void swap_cols(float* a, int* q, int k, int pj, int N) {
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < N) {
-        float temp = a[i * N + k];
-        a[i * N + k] = a[i * N + pj];
-        a[i * N + pj] = temp;
-    }
+#ifndef max
+#define max( a, b ) ( ((a) > (b)) ? (a) : (b) )
+#endif
+
+#ifndef min
+#define min( a, b ) ( ((a) < (b)) ? (a) : (b) )
+#endif
+#define TINY 1.0e-40
+#define a(i,j,N) a[(i)*(N)+(j)]  // Updated for dynamic size `N`
+
+#define GO 1
+#define NOGO 0
+
+void Check_Kernel(const char *message){
+  cudaError_t error = cudaGetLastError();
+  if (error != cudaSuccess){
+    fprintf(stderr,"Error: %s:%s\n",message, cudaGetErrorString(error));
+  }
 }
 
-// Matrix normalization and subtraction kernel
-__global__ void normalize_and_subtract(float* a, int k, int N) {
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i > k && i < N) {
-        float ftmp = a[i * N + k] /= a[k * N + k];
-        for (int j = k + 1; j < N; j++) {
-            a[i * N + j] -= ftmp * a[k * N + j];
-        }
-    }
-}
-
-// Host function for pivot decomposition (run on CPU but offload heavy tasks to GPU)
-void h_pivot_decomp(float* a, int* p, int* q, int N) {
-    int i, j, k;
-    int pi, pj, tmp;
+__device__ void d_pivot_decomp(float *a, int *p, int *q, int N){
+    int i,j,k;
+    int pi,pj,tmp;
     float max;
-
-    // Allocate GPU memory
-    float* d_a;
-    int* d_p;
-    int* d_q;
-    CUDA_CALL(cudaMalloc(&d_a, N * N * sizeof(float)));
-    CUDA_CALL(cudaMalloc(&d_p, N * sizeof(int)));
-    CUDA_CALL(cudaMalloc(&d_q, N * sizeof(int)));
-
-    // Copy data to GPU
-    CUDA_CALL(cudaMemcpy(d_a, a, N * N * sizeof(float), cudaMemcpyHostToDevice));
-    CUDA_CALL(cudaMemcpy(d_p, p, N * sizeof(int), cudaMemcpyHostToDevice));
-    CUDA_CALL(cudaMemcpy(d_q, q, N * sizeof(int), cudaMemcpyHostToDevice));
-
-    for (k = 0; k < N; k++) {
-        pi = -1, pj = -1, max = 0.0;
-        // Pivot selection (run on CPU for simplicity)
-        for (i = k; i < N; i++) {
-            for (j = k; j < N; j++) {
-                if (fabs(a[i * N + j]) > max) {
-                    max = fabs(a[i * N + j]);
-                    pi = i;
-                    pj = j;
+    float ftmp;
+    for (k=0;k<N;k++){
+        pi=-1,pj=-1,max=0.0;
+        // Find pivot in submatrix a(k:N,k:N)
+        for (i=k;i<N;i++) {
+            for (j=k;j<N;j++) {
+                if (fabs(a(i,j,N))>max){
+                    max = fabs(a(i,j,N));
+                    pi=i;
+                    pj=j;
                 }
             }
         }
-
-        // Swap rows on GPU
-        tmp = p[k];
-        p[k] = p[pi];
-        p[pi] = tmp;
-        swap_rows<<<(N + 255) / 256, 256>>>(d_a, d_p, k, pi, N);
-
-        // Swap columns on GPU
-        tmp = q[k];
-        q[k] = q[pj];
-        q[pj] = tmp;
-        swap_cols<<<(N + 255) / 256, 256>>>(d_a, d_q, k, pj, N);
-
-        // Normalize and subtract on GPU
-        normalize_and_subtract<<<(N + 255) / 256, 256>>>(d_a, k, N);
-        CUDA_CALL(cudaDeviceSynchronize()); // Sync GPU
-    }
-
-    // Copy the result back to the host
-    CUDA_CALL(cudaMemcpy(a, d_a, N * N * sizeof(float), cudaMemcpyDeviceToHost));
-
-    // Free GPU memory
-    cudaFree(d_a);
-    cudaFree(d_p);
-    cudaFree(d_q);
-}
-
-// Forward/backward substitution kernel (solve phase)
-__global__ void forward_substitution(float* a, float* b, int N) {
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < N) {
-        for (int j = 0; j < i; j++) {
-            b[i] -= a[i * N + j] * b[j];
+        // Swap Row
+        tmp=p[k];
+        p[k]=p[pi];
+        p[pi]=tmp;
+        for (j=0;j<N;j++){
+            ftmp=a(k,j,N);
+            a(k,j,N)=a(pi,j,N);
+            a(pi,j,N)=ftmp;
+        }
+        // Swap Col
+        tmp=q[k];
+        q[k]=q[pj];
+        q[pj]=tmp;
+        for (i=0;i<N;i++){
+            ftmp=a(i,k,N);
+            a(i,k,N)=a(i,pj,N);
+            a(i,pj,N)=ftmp;
+        }
+        // Check pivot size and decompose
+        if ((fabs(a(k,k,N))>TINY)){
+            for (i=k+1;i<N;i++){
+                // Column normalisation
+                ftmp=a(i,k,N)/=a(k,k,N);
+                for (j=k+1;j<N;j++){
+                    // a(ik)*a(kj) subtracted from lower-right submatrix elements
+                    a(i,j,N)-=(ftmp*a(k,j,N));
+                }
+            }
         }
     }
 }
 
-__global__ void backward_substitution(float* a, float* b, int N) {
-    int i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i >= 0 && i < N) {
-        for (int j = i + 1; j < N; j++) {
-            b[i] -= a[i * N + j] * b[j];
-        }
-        b[i] /= a[i * N + i];
+__device__ void d_solve(float *a, float *x, int *p, int *q, int N){
+    int i, ii = 0, j;
+    float ftmp;
+    float *xtmp = new float[N];  // Dynamically allocate memory for xtmp
+    int *inverse_q = new int[N];  // Array to store inverse of q
+
+    // Generate inverse of q_pivot
+    for (i = 0; i < N; i++) {
+        inverse_q[q[i]] = i;
     }
+
+    // Swap rows (x=Px)
+    for (i = 0; i < N; i++) {
+        xtmp[i] = x[p[i]]; // Value that should be here
+    }
+
+    // Lx=x
+    for (i = 0; i < N; i++) {
+        ftmp = xtmp[i];
+        if (ii != 0)
+            for (j = ii - 1; j < i; j++)
+                ftmp -= a(i,j,N) * xtmp[j];
+        else if (ftmp != 0.0)
+            ii = i + 1;
+        xtmp[i] = ftmp;
+    }
+
+    // Backward substitution for Ux=x
+    xtmp[N - 1] /= a(N-1, N-1, N);
+    for (i = N - 2; i >= 0; i--) {
+        ftmp = xtmp[i];
+        for (j = i + 1; j < N; j++) {
+            ftmp -= a(i,j,N) * xtmp[j];
+        }
+        xtmp[i] = ftmp / a(i,i,N);
+    }
+
+    // Apply reverse column pivoting (Reordering solution to original variable order)
+    for (i = 0; i < N; i++) {
+        x[i] = xtmp[inverse_q[i]];
+    }
+
+    delete[] xtmp;    // Free dynamically allocated memory
+    delete[] inverse_q;  // Free inverse_q
 }
 
-// Solve function (parallelized using CUDA)
-void h_solve(float* a, float* b, int* p, int* q, int N) {
-    // Allocate GPU memory for a, b
-    float* d_a;
-    float* d_b;
-    CUDA_CALL(cudaMalloc(&d_a, N * N * sizeof(float)));
-    CUDA_CALL(cudaMalloc(&d_b, N * sizeof(float)));
+__global__ void solve(float *A, float *B, int max, int N){
+  int id = blockDim.x*blockIdx.x + threadIdx.x;
+  int *p_pivot = new int[N];  // Dynamically allocate memory for pivots
+  int *q_pivot = new int[N];
+  
+  if ((GO == 1) && (id < max)){
+    for (int i = 0; i < N; i++) {
+        p_pivot[i] = q_pivot[i] = i;
+    }
 
-    // Copy data to GPU
-    CUDA_CALL(cudaMemcpy(d_a, a, N * N * sizeof(float), cudaMemcpyHostToDevice));
-    CUDA_CALL(cudaMemcpy(d_b, b, N * sizeof(float), cudaMemcpyHostToDevice));
+    d_pivot_decomp(&A[id*N*N], p_pivot, q_pivot, N);
+    d_solve(&A[id*N*N], &B[id*N], p_pivot, q_pivot, N);
+  }
 
-    // Perform forward substitution on GPU
-    forward_substitution<<<(N + 255) / 256, 256>>>(d_a, d_b, N);
-    CUDA_CALL(cudaDeviceSynchronize()); // Sync GPU
-
-    // Perform backward substitution on GPU
-    backward_substitution<<<(N + 255) / 256, 256>>>(d_a, d_b, N);
-    CUDA_CALL(cudaDeviceSynchronize()); // Sync GPU
-
-    // Copy the solution back to host
-    CUDA_CALL(cudaMemcpy(b, d_b, N * sizeof(float), cudaMemcpyDeviceToHost));
-
-    // Free GPU memory
-    cudaFree(d_a);
-    cudaFree(d_b);
+  delete[] p_pivot;  // Free dynamically allocated memory
+  delete[] q_pivot;
 }
 
-int main() {
+int main(){
     int N;
     float *a, *b;
-    int *p_pivot, *q_pivot;
-
-    // Read input from the file
     FILE *file = fopen("input.txt", "r");
     if (file == NULL) {
         fprintf(stderr, "Error opening file.\n");
@@ -161,17 +156,13 @@ int main() {
 
     // Read the size of the system
     fscanf(file, "%d", &N);
-    if (N > MAX_SIZE) {
-        fprintf(stderr, "Matrix size exceeds maximum allowed size (%d).\n", MAX_SIZE);
-        fclose(file);
-        return EXIT_FAILURE;
-    }
+
+    const unsigned int matsize = N * N;
+    const unsigned int vecsize = N;
 
     // Allocate memory for matrix A and vector B
     a = (float *)malloc(N * N * sizeof(float));
     b = (float *)malloc(N * sizeof(float));
-    p_pivot = (int *)malloc(N * sizeof(int));
-    q_pivot = (int *)malloc(N * sizeof(int));
 
     // Read matrix A
     for (int i = 0; i < N; i++)
@@ -184,58 +175,40 @@ int main() {
 
     fclose(file);
 
-    // Initialize pivot arrays
+    // CUDA setup
+    cudaSetDevice(0);
+    float* d_A;
+    float* d_b;
+    CUDA_CHK(cudaMalloc((void**)&d_A, sizeof(float) * matsize));
+    CUDA_CHK(cudaMalloc((void**)&d_b, sizeof(float) * vecsize));
+
+    // Copy input data to the device
+    CUDA_CHK(cudaMemcpy(d_A, a, sizeof(float) * matsize, cudaMemcpyHostToDevice));
+    CUDA_CHK(cudaMemcpy(d_b, b, sizeof(float) * vecsize, cudaMemcpyHostToDevice));
+
+    // Set up kernel execution parameters (use more threads and blocks for larger matrices)
+    dim3 threadsPerBlock(256);
+    dim3 blocksPerGrid((N + threadsPerBlock.x - 1) / threadsPerBlock.x);
+
+    // Execute the kernel
+    solve<<<blocksPerGrid, threadsPerBlock>>>(d_A, d_b, 1, N);
+    cudaDeviceSynchronize();
+    Check_Kernel("Solve");
+
+    // Copy the results back to the host
+    CUDA_CHK(cudaMemcpy(b, d_b, sizeof(float) * vecsize, cudaMemcpyDeviceToHost));
+
+    // Output the solution
+    printf("Solution vector:\n");
     for (int i = 0; i < N; i++) {
-        p_pivot[i] = i;
-        q_pivot[i] = i;
+        printf("%f\n", b[i]);
     }
 
-    // Perform pivot decomposition
-    h_pivot_decomp(a, p_pivot, q_pivot, N);
-
-    // Solve the system
-    h_solve(a, b, p_pivot, q_pivot, N);
-
-    // Output results to file
-    FILE* output = fopen("output.txt", "w");
-    fprintf(output, "%d\n", N);
-
-    // Output lower triangular matrix L
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            if (i > j)
-                fprintf(output, "%.6f ", a[i * N + j]);
-            else if (i == j)
-                fprintf(output, "1.000000 ");
-            else
-                fprintf(output, "0.000000 ");
-        }
-        fprintf(output, "\n");
-    }
-
-    // Output upper triangular matrix U
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            if (i <= j)
-                fprintf(output, "%.6f ", a[i * N + j]);
-            else
-                fprintf(output, "0.000000 ");
-        }
-        fprintf(output, "\n");
-    }
-
-    // Output solution vector X
-    for (int i = 0; i < N; i++) {
-        fprintf(output, "%.6f\n", b[i]);
-    }
-
-    fclose(output);
-
-    // Free allocated memory
+    // Clean up
     free(a);
     free(b);
-    free(p_pivot);
-    free(q_pivot);
+    CUDA_CHK(cudaFree(d_A));
+    CUDA_CHK(cudaFree(d_b));
 
-    return EXIT_SUCCESS;
+    return 0;
 }
