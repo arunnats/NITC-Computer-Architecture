@@ -4,13 +4,14 @@
 #include <string.h>
 #include <math.h>
 
-#define CUDA_CHK(NAME, ARGS) { \
-  cudaError_t cuda_err_code = NAME ARGS; \
+#define CUDA_CHK(...) { \
+  cudaError_t cuda_err_code = __VA_ARGS__; \
   if (cuda_err_code != cudaSuccess) { \
-    printf("%s failed with code %d\n", #NAME, cuda_err_code); \
+    printf("%s failed with code %d\n", #__VA_ARGS__, cuda_err_code); \
     abort(); \
   } \
 }
+
 #ifndef max
 #define max( a, b ) ( ((a) > (b)) ? (a) : (b) )
 #endif
@@ -38,7 +39,7 @@ __device__ void d_pivot_decomp(float *a, int *p, int *q, int N){
     float ftmp;
     for (k=0;k<N;k++){
         pi=-1,pj=-1,max=0.0;
-        //find pivot in submatrix a(k:n,k:n)
+        // Find pivot in submatrix a(k:n,k:n)
         for (i=k;i<N;i++) {
             for (j=k;j<N;j++) {
                 if (fabs(a(i,j,N))>max){
@@ -48,7 +49,7 @@ __device__ void d_pivot_decomp(float *a, int *p, int *q, int N){
                 }
             }
         }
-        //Swap Row
+        // Swap Row
         tmp=p[k];
         p[k]=p[pi];
         p[pi]=tmp;
@@ -57,7 +58,7 @@ __device__ void d_pivot_decomp(float *a, int *p, int *q, int N){
             a(k,j,N)=a(pi,j,N);
             a(pi,j,N)=ftmp;
         }
-        //Swap Col
+        // Swap Col
         tmp=q[k];
         q[k]=q[pj];
         q[pj]=tmp;
@@ -66,69 +67,75 @@ __device__ void d_pivot_decomp(float *a, int *p, int *q, int N){
             a(i,k,N)=a(i,pj,N);
             a(i,pj,N)=ftmp;
         }
-        //END PIVOT
-
-        //check pivot size and decompose
+        // Check pivot size and decompose
         if ((fabs(a(k,k,N))>TINY)){
             for (i=k+1;i<N;i++){
-                //Column normalisation
+                // Column normalisation
                 ftmp=a(i,k,N)/=a(k,k,N);
                 for (j=k+1;j<N;j++){
-                    //a(ik)*a(kj) subtracted from lower right submatrix elements
+                    // a(ik)*a(kj) subtracted from lower right submatrix elements
                     a(i,j,N)-=(ftmp*a(k,j,N));
                 }
             }
         }
-        //END DECOMPOSE
     }
 }
 
 __device__ void d_solve(float *a, float *x, int *p, int *q, int N){
     int i,ii=0,j;
     float ftmp;
-    float xtmp[1024];  // A safe upper bound to avoid dynamic allocation on the device side
-    //Swap rows (x=Px)
+    float *xtmp = new float[N];  // Dynamically allocate memory for xtmp
+
+    // Swap rows (x=Px)
     for (i=0; i<N; i++){
-        xtmp[i]=x[p[i]]; //value that should be here
+        xtmp[i]=x[p[i]]; // Value that should be here
     }
-    //Lx=x
+
+    // Lx=x
     for (i=0;i<N;i++){
         ftmp=xtmp[i];
         if (ii != 0)
             for (j=ii-1;j<i;j++)
                 ftmp-=a(i,j,N)*xtmp[j];
-        else
-            if (ftmp!=0.0)
-                ii=i+1;
+        else if (ftmp!=0.0)
+            ii=i+1;
         xtmp[i]=ftmp;
     }
-    //backward substitution
+
+    // Backward substitution
     xtmp[N-1]/=a(N-1,N-1,N);
     for (i=N-2;i>=0;i--){
         ftmp=xtmp[i];
         for (j=i+1;j<N;j++){
             ftmp-=a(i,j,N)*xtmp[j];
         }
-        xtmp[i]=(ftmp)/a(i,i,N);
+        xtmp[i]=ftmp/a(i,i,N);
     }
-    for (i=0;i<N;i++)
-    //Last bit
+
+    // Swap columns (x=Qx)
     for (i=0;i<N;i++){
         x[i]=xtmp[q[i]];
     }
+
+    delete[] xtmp;  // Free dynamically allocated memory
 }
 
 __global__ void solve(float *A, float *B, int max, int N){
   int id= blockDim.x*blockIdx.x + threadIdx.x;
-  int p_pivot[1024],q_pivot[1024];  // Upper bound to avoid dynamic allocation on device side
+  int *p_pivot = new int[N];  // Dynamically allocate memory for pivots
+  int *q_pivot = new int[N];
+  
   if ((GO==1) && (id < max)){
     for (int i=0;i<N;i++) {
         p_pivot[i]=q_pivot[i]=i;
     }
 
-    d_pivot_decomp(&A[id*N*N],&p_pivot[0],&q_pivot[0], N);
-    d_solve(&A[id*N*N],&B[id*N],&p_pivot[0],&q_pivot[0], N);
+    d_pivot_decomp(&A[id*N*N], p_pivot, q_pivot, N);
+    d_solve(&A[id*N*N], &B[id*N], p_pivot, q_pivot, N);
   }
+
+  delete[] p_pivot;  // Free dynamically allocated memory
+  delete[] q_pivot;
 }
 
 int main(){
@@ -165,24 +172,24 @@ int main(){
     cudaSetDevice(0);
     float* d_A;
     float* d_b;
-    CUDA_CHK(cudaMalloc, (&d_A, sizeof(float)*matsize));
-    CUDA_CHK(cudaMalloc, (&d_b, sizeof(float)*vecsize));
+    CUDA_CHK(cudaMalloc((void**)&d_A, sizeof(float)*matsize));
+    CUDA_CHK(cudaMalloc((void**)&d_b, sizeof(float)*vecsize));
 
     // Copy input data to the device
-    CUDA_CHK(cudaMemcpy, (d_A, a, sizeof(float)*matsize, cudaMemcpyHostToDevice));
-    CUDA_CHK(cudaMemcpy, (d_b, b, sizeof(float)*vecsize, cudaMemcpyHostToDevice));
+    CUDA_CHK(cudaMemcpy(d_A, a, sizeof(float)*matsize, cudaMemcpyHostToDevice));
+    CUDA_CHK(cudaMemcpy(d_b, b, sizeof(float)*vecsize, cudaMemcpyHostToDevice));
 
-    // Set up kernel execution parameters
-    dim3 threadsPerBlock(1,1,1);
-    dim3 blocksPerGrid(1,1,1);
+    // Set up kernel execution parameters (use more threads and blocks for larger matrices)
+    dim3 threadsPerBlock(256);
+    dim3 blocksPerGrid((N + threadsPerBlock.x - 1) / threadsPerBlock.x);
 
     // Execute the kernel
-    solve<<<blocksPerGrid,threadsPerBlock>>>(d_A,d_b,1, N);
+    solve<<<blocksPerGrid, threadsPerBlock>>>(d_A, d_b, 1, N);
     cudaDeviceSynchronize();
     Check_Kernel("Solve");
 
     // Copy the results back to the host
-    CUDA_CHK(cudaMemcpy, b, d_b, sizeof(float)*vecsize, cudaMemcpyDeviceToHost));
+    CUDA_CHK(cudaMemcpy(b, d_b, sizeof(float)*vecsize, cudaMemcpyDeviceToHost));
 
     // Output the solution
     printf("Solution vector:\n");
@@ -193,8 +200,8 @@ int main(){
     // Clean up
     free(a);
     free(b);
-    CUDA_CHK(cudaFree, (d_A));
-    CUDA_CHK(cudaFree, (d_b));
+    CUDA_CHK(cudaFree(d_A));
+    CUDA_CHK(cudaFree(d_b));
 
     return 0;
 }
