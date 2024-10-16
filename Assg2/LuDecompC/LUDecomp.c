@@ -3,7 +3,7 @@
 #include <math.h>
 
 #define TINY 1e-20
-#define MAX_SIZE 100 // Maximum size for the matrix
+#define MAX_SIZE 1000 // Maximum size for the matrix
 #define a(i,j) a[(i)*N+(j)] // Access macro for matrix
 
 void h_pivot_decomp(float *a, int *p, int *q, int N){
