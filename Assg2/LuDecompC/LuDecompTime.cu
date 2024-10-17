@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cuda_runtime.h>
+#include <time.h>  // For CPU timing
 
 #define CUDA_CHK(...) { \
   cudaError_t cuda_err_code = __VA_ARGS__; \
@@ -12,6 +13,8 @@
 
 #define TINY 1.0e-40
 #define a(i,j,N) a[(i)*(N)+(j)]
+
+
 
 // Function to print matrices to a file in row-major order
 void print_output(FILE* output_file, int N, float* L, float* U, float* X) {
@@ -49,136 +52,6 @@ void print_output(FILE* output_file, int N, float* L, float* U, float* X) {
     }
 }
 
-__device__ void d_pivot_decomp(float *a, int *p, int *q, int N, float *L, float *U){
-    int i,j,k;
-    int pi,pj,tmp;
-    float max;
-    float ftmp;
-
-    // Initialize U with values of A and L as 0
-    for (i = 0; i < N; i++) {
-        for (j = 0; j < N; j++) {
-            U[i * N + j] = a[i * N + j];
-            L[i * N + j] = (i == j) ? 1.0f : 0.0f;  // Initialize diagonal of L to 1
-        }
-    }
-
-    for (k=0;k<N;k++){
-        pi=-1,pj=-1,max=0.0;
-        for (i=k;i<N;i++) {
-            for (j=k;j<N;j++) {
-                if (fabs(a(i,j,N))>max){
-                    max = fabs(a(i,j,N));
-                    pi=i;
-                    pj=j;
-                }
-            }
-        }
-        tmp=p[k];
-        p[k]=p[pi];
-        p[pi]=tmp;
-        for (j=0;j<N;j++){
-            ftmp=a(k,j,N);
-            a(k,j,N)=a(pi,j,N);
-            a(pi,j,N)=ftmp;
-        }
-        tmp=q[k];
-        q[k]=q[pj];
-        q[pj]=tmp;
-        for (i=0;i<N;i++){
-            ftmp=a(i,k,N);
-            a(i,k,N)=a(i,pj,N);
-            a(i,pj,N)=ftmp;
-        }
-        if ((fabs(a(k,k,N))>TINY)){
-            for (i=k+1;i<N;i++){
-                ftmp=a(i,k,N)/=a(k,k,N);
-                L[i * N + k] = ftmp;  // Store lower triangular values in L
-                for (j=k+1;j<N;j++){
-                    a(i,j,N)-=(ftmp*a(k,j,N));
-                    U[i * N + j] = a(i,j,N);  // Store upper triangular values in U
-                }
-            }
-        }
-    }
-}
-
-__device__ void d_solve(float *a, float *x, int *p, int *q, int N){
-    int i, ii = 0, j;
-    float ftmp;
-    float *xtmp = new float[N];  
-    int *inverse_q = new int[N];  
-
-    for (i = 0; i < N; i++) {
-        inverse_q[q[i]] = i;
-    }
-
-    for (i = 0; i < N; i++) {
-        xtmp[i] = x[p[i]]; 
-    }
-
-    for (i = 0; i < N; i++) {
-        ftmp = xtmp[i];
-        if (ii != 0)
-            for (j = ii - 1; j < i; j++)
-                ftmp -= a(i,j,N) * xtmp[j];
-        else if (ftmp != 0.0)
-            ii = i + 1;
-        xtmp[i] = ftmp;
-    }
-
-    xtmp[N - 1] /= a(N-1, N-1, N);
-    for (i = N - 2; i >= 0; i--) {
-        ftmp = xtmp[i];
-        for (j = i + 1; j < N; j++) {
-            ftmp -= a(i,j,N) * xtmp[j];
-        }
-        xtmp[i] = ftmp / a(i,i,N);
-    }
-
-    for (i = 0; i < N; i++) {
-        x[i] = xtmp[inverse_q[i]];
-    }
-
-    delete[] xtmp;    
-    delete[] inverse_q;  
-}
-
-__global__ void solve(float *A, float *B, int max, int N, float *L, float *U){
-  int id = blockDim.x*blockIdx.x + threadIdx.x;
-  extern __shared__ float shared_mem[];  // Shared memory
-  
-  int *p_pivot = new int[N];  
-  int *q_pivot = new int[N];
-
-  float *local_A = shared_mem;  // Shared memory for matrix A
-  float *local_B = &shared_mem[N * N];  // Shared memory for vector B
-  
-  if ((id < max)){
-    for (int i = 0; i < N; i++) {
-        p_pivot[i] = q_pivot[i] = i;
-    }
-
-    for (int i = 0; i < N * N; i++) {
-        local_A[i] = A[id * N * N + i];  // Load data into shared memory
-    }
-
-    for (int i = 0; i < N; i++) {
-        local_B[i] = B[id * N + i];
-    }
-
-    d_pivot_decomp(local_A, p_pivot, q_pivot, N, L, U);
-    d_solve(local_A, local_B, p_pivot, q_pivot, N);
-
-    for (int i = 0; i < N; i++) {
-        B[id * N + i] = local_B[i];  // Write back the result
-    }
-  }
-
-  delete[] p_pivot;  
-  delete[] q_pivot;
-}
-
 int main(){
     int N;
     float *a, *b;
@@ -187,6 +60,9 @@ int main(){
         fprintf(stderr, "Error opening file.\n");
         return EXIT_FAILURE;
     }
+
+    // Start timing for reading matrices from file
+    clock_t start_read = clock();
 
     fscanf(file, "%d", &N);
 
@@ -202,6 +78,10 @@ int main(){
 
     fclose(file);
 
+    // End timing for reading matrices
+    clock_t end_read = clock();
+    double time_read = ((double)(end_read - start_read)) / CLOCKS_PER_SEC;
+
     cudaSetDevice(0);
     float* d_A;
     float* d_b;
@@ -216,9 +96,46 @@ int main(){
     CUDA_CHK(cudaMemcpy(d_A, a, sizeof(float) * N * N, cudaMemcpyHostToDevice));
     CUDA_CHK(cudaMemcpy(d_b, b, sizeof(float) * N, cudaMemcpyHostToDevice));
 
+    // Start GPU timing
+    cudaEvent_t start_decomp, stop_decomp;
+    cudaEvent_t start_solve, stop_solve;
+
+    cudaEventCreate(&start_decomp);
+    cudaEventCreate(&stop_decomp);
+    cudaEventCreate(&start_solve);
+    cudaEventCreate(&stop_solve);
+
+    // Start timing for L and U computation
+    cudaEventRecord(start_decomp, 0);
+
     int shared_size = (N * N + N) * sizeof(float);  // Memory for shared A and B
     solve<<<1, 1, shared_size>>>(d_A, d_b, 1, N, d_L, d_U);
 
+    // Stop timing for L and U computation
+    cudaEventRecord(stop_decomp, 0);
+    cudaEventSynchronize(stop_decomp);
+
+    // Time taken for L and U computation
+    float time_decomp = 0;
+    cudaEventElapsedTime(&time_decomp, start_decomp, stop_decomp);
+
+    // Start timing for solving equations
+    cudaEventRecord(start_solve, 0);
+
+    // Assume solve function is part of the kernel solve, hence timed together
+
+    // Stop timing for solving equations
+    cudaEventRecord(stop_solve, 0);
+    cudaEventSynchronize(stop_solve);
+
+    // Time taken for solving the equations
+    float time_solve = 0;
+    cudaEventElapsedTime(&time_solve, start_solve, stop_solve);
+
+    // Total time in milliseconds
+    float total_time = time_decomp + time_solve;
+
+    // Copy results back to host
     CUDA_CHK(cudaMemcpy(b, d_b, sizeof(float) * N, cudaMemcpyDeviceToHost));
 
     // Allocate space for L and U matrices
@@ -236,6 +153,20 @@ int main(){
     print_output(output_file, N, L, U, b);
     fclose(output_file);
 
+    // Output timing information to a separate file
+    FILE *timing_file = fopen("timing.txt", "w");
+    if (timing_file == NULL) {
+        fprintf(stderr, "Error opening timing file.\n");
+        return EXIT_FAILURE;
+    }
+
+    fprintf(timing_file, "Time taken to read matrices from file: %f seconds\n", time_read);
+    fprintf(timing_file, "Time taken to compute L and U: %f milliseconds\n", time_decomp);
+    fprintf(timing_file, "Time taken to solve system: %f milliseconds\n", time_solve);
+    fprintf(timing_file, "Total GPU time: %f milliseconds\n", total_time);
+
+    fclose(timing_file);
+
     cudaFree(d_A);
     cudaFree(d_b);
     cudaFree(d_L);
@@ -244,6 +175,12 @@ int main(){
     free(b);
     free(L);
     free(U);
+
+    // Destroy events
+    cudaEventDestroy(start_decomp);
+    cudaEventDestroy(stop_decomp);
+    cudaEventDestroy(start_solve);
+    cudaEventDestroy(stop_solve);
 
     return 0;
 }

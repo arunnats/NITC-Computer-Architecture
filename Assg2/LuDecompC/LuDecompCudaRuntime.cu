@@ -98,7 +98,7 @@ __device__ void d_solve(float *a, float *x, int *p, int *q, int N){
 }
 
 __global__ void solve(float *A, float *B, int max, int N){
-  int id = blockDim.x*blockIdx.x + threadIdx.x;
+  int id = blockDim.x * blockIdx.x + threadIdx.x;
   extern __shared__ float shared_mem[];  // Shared memory
   
   int *p_pivot = new int[N];  
@@ -165,7 +165,10 @@ int main(){
     CUDA_CHK(cudaMemcpy(d_b, b, sizeof(float) * N, cudaMemcpyHostToDevice));
 
     int shared_size = (N * N + N) * sizeof(float);  // Memory for shared A and B
-    solve<<<1, N, shared_size>>>(d_A, d_b, 1, N);  // Kernel with shared memory
+    int M = 10;  // Let's assume we have 10 systems to solve in parallel
+    int threadsPerBlock = N;  // Number of threads per block, each handling one row
+    int blocksPerGrid = (M + threadsPerBlock - 1) / threadsPerBlock;  // Number of blocks
+    solve<<<blocksPerGrid, threadsPerBlock, shared_size>>>(d_A, d_b, M, N);  // Kernel with shared memory
     cudaDeviceSynchronize();
 
     CUDA_CHK(cudaMemcpy(b, d_b, sizeof(float) * N, cudaMemcpyDeviceToHost));
