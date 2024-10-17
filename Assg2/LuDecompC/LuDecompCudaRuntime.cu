@@ -132,12 +132,20 @@ __global__ void solve(float *A, float *B, int max, int N){
   delete[] q_pivot;
 }
 
-int main(){
+int main(int argc, char *argv[]){
+    if (argc < 3) {
+        fprintf(stderr, "Usage: %s <input_file> <output_file>\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    const char* input_file = argv[1];
+    const char* output_file = argv[2];
+
     int N;
     float *a, *b;
-    FILE *file = fopen("input.txt", "r");
+    FILE *file = fopen(input_file, "r");
     if (file == NULL) {
-        fprintf(stderr, "Error opening file.\n");
+        fprintf(stderr, "Error opening input file: %s\n", input_file);
         return EXIT_FAILURE;
     }
 
@@ -165,7 +173,7 @@ int main(){
     CUDA_CHK(cudaMemcpy(d_b, b, sizeof(float) * N, cudaMemcpyHostToDevice));
 
     int shared_size = (N * N + N) * sizeof(float);  // Memory for shared A and B
-    int M = 10;  // Let's assume we have 10 systems to solve in parallel
+    int M = 10;  // Assume we have 10 systems to solve in parallel
     int threadsPerBlock = N;  // Number of threads per block, each handling one row
     int blocksPerGrid = (M + threadsPerBlock - 1) / threadsPerBlock;  // Number of blocks
     solve<<<blocksPerGrid, threadsPerBlock, shared_size>>>(d_A, d_b, M, N);  // Kernel with shared memory
@@ -173,10 +181,17 @@ int main(){
 
     CUDA_CHK(cudaMemcpy(b, d_b, sizeof(float) * N, cudaMemcpyDeviceToHost));
 
-    printf("Solution vector:\n");
-    for (int i = 0; i < N; i++) {
-        printf("%f\n", b[i]);
+    FILE *outfile = fopen(output_file, "w");
+    if (outfile == NULL) {
+        fprintf(stderr, "Error opening output file: %s\n", output_file);
+        return EXIT_FAILURE;
     }
+
+    for (int i = 0; i < N; i++) {
+        fprintf(outfile, "%f\n", b[i]);
+    }
+
+    fclose(outfile);
 
     free(a);
     free(b);
