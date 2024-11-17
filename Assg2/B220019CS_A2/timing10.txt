@@ -1,0 +1,3 @@
+Time taken to read A and B: 0.000114464 seconds
+Time taken in computing L and U: 0.00465203 seconds
+Total time taken to solve system: 0.00465203 seconds
